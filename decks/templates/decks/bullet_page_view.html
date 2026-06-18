@@ -1,0 +1,192 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bullet Page</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #eef2f4;
+            font-family: "Poppins", Arial, Helvetica, sans-serif;
+        }
+
+        .page {
+            width: min(1200px, calc(100% - 32px));
+            margin: 24px auto;
+        }
+
+        .bullet-slide {
+            position: relative;
+            min-height: 675px;
+            overflow: hidden;
+            color: #fff;
+            background: url("{% static 'decks/img/image(1).png' %}") center / cover no-repeat;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.24);
+        }
+
+        .slide-title {
+            position: absolute;
+            top: 46px;
+            left: 44px;
+            max-width: 330px;
+            margin: 0;
+            font-size: 44px;
+            line-height: 1.05;
+            font-weight: 900;
+            text-transform: capitalize;
+        }
+
+        .slide-description {
+            position: absolute;
+            left: 44px;
+            bottom: 42px;
+            margin: 0;
+            font-size: 34px;
+            line-height: 1.15;
+            font-weight: 400;
+        }
+
+        .main-panel {
+            position: absolute;
+            right: 42px;
+            top: 110px;
+            bottom: 0;
+            width: 660px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-bottom: 0;
+            border-radius: 14px 14px 0 0;
+            background: rgba(173, 185, 190, 0.34);
+        }
+
+        .bullet-card {
+            position: absolute;
+            min-width: 500px;
+            max-width: 510px;
+            border: 7px solid rgba(180, 203, 207, 0.98);
+            border-radius: 12px;
+            padding: 18px 24px;
+            color: #000;
+            background: #fff;
+            box-shadow: 0 4px 0 rgba(13, 38, 50, 0.22);
+        }
+
+        .bullet-card:nth-child(1) {
+            top: -52px;
+            left: 70px;
+        }
+
+        .bullet-card:nth-child(2) {
+            top: 135px;
+            left: -55px;
+        }
+
+        .bullet-card:nth-child(3) {
+            right: -35px;
+            bottom: 42px;
+        }
+
+        .bullet-card:nth-child(n+4) {
+            position: relative;
+            top: auto;
+            left: auto;
+            right: auto;
+            bottom: auto;
+            margin: 18px 24px 0 auto;
+        }
+
+        .bullet-card h2 {
+            margin: 0 0 10px;
+            font-size: 22px;
+            line-height: 1.2;
+            font-weight: 900;
+        }
+
+        .bullet-card ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .bullet-card li {
+            margin: 0 0 9px;
+            font-size: 14px;
+            line-height: 1.25;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .dashboard-link {
+            display: inline-block;
+            margin: 18px 0 0;
+            color: #0b3954;
+            font-weight: 800;
+        }
+
+        @media (max-width: 900px) {
+            .bullet-slide { min-height: 920px; }
+
+            .slide-title {
+                top: 34px;
+                left: 28px;
+                font-size: 42px;
+            }
+
+            .main-panel {
+                left: 28px;
+                right: 28px;
+                top: 210px;
+                width: auto;
+                padding: 20px;
+            }
+
+            .bullet-card,
+            .bullet-card:nth-child(n) {
+                position: relative;
+                inset: auto;
+                width: 100%;
+                min-width: 0;
+                margin: 0 0 18px;
+            }
+
+            .slide-description {
+                left: 28px;
+                right: 28px;
+                bottom: 28px;
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <section class="bullet-slide">
+            <h1 class="slide-title">{% if bullet_page %}{{ bullet_page.title }}{% endif %}</h1>
+            <p class="slide-description">{% if bullet_page %}{{ bullet_page.description }}{% endif %}</p>
+
+            <div class="main-panel">
+                {% if bullet_page %}
+                    {% for card in bullet_page.cards.all %}
+                        <article class="bullet-card">
+                            <h2>{{ card.title }}</h2>
+                            <ul>
+                                {% for item in card.items.all %}
+                                    <li>{{ item.text }}</li>
+                                {% endfor %}
+                            </ul>
+                        </article>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </section>
+
+        <a class="dashboard-link" href="{% url 'bullet_page_dashboard' %}">Open dashboard</a>
+    </main>
+</body>
+</html>

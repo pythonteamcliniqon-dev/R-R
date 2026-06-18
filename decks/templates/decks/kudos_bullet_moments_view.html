@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kudos Bullets</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing:border-box; }
+        body { margin:0; min-height:100vh; background:#eef2f4; font-family:"Poppins", Arial, sans-serif; }
+        .page { width:min(1200px, calc(100% - 32px)); margin:24px auto; }
+        .kudos { position:relative; min-height:675px; overflow:hidden; color:#fff; background:url("{% static 'decks/img/image(1).png' %}") center/cover no-repeat; box-shadow:0 2px 10px rgba(0,0,0,.24); padding:34px 54px; }
+        .heading { display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:28px; color:#fff; font-size:22px; font-weight:800; }
+        .heading:before,.heading:after { content:""; height:1px; flex:1; background:rgba(255,255,255,.55); }
+        .stage { position:relative; min-height:540px; }
+        .person { position:absolute; left:50%; bottom:70px; width:440px; text-align:center; transform:translateX(-50%); z-index:2; }
+        .person img { width:100%; height:430px; object-fit:contain; object-position:center bottom; display:block; }
+        .person-info { width:475px; max-width:100%; margin:-2px auto 0; border-radius:14px; padding:8px 20px; color:#082a74; background:#fff; font-weight:900; }
+        .person-info strong,.person-info span { display:block; }
+        .person-info strong { font-size:34px; line-height:1.1; }
+        .person-info span { margin-top:6px; font-size:28px; line-height:1.1; }
+        .cards { position:relative; z-index:3; display:grid; grid-template-columns:minmax(260px, 330px) minmax(310px, 350px); justify-content:space-between; gap:116px 0; padding-top:60px; }
+        .card { border-radius:22px; padding:20px 24px; color:#082a74; background:#fff; text-align:center; min-height:124px; display:flex; flex-direction:column; justify-content:center; }
+        .card.metric strong { display:block; font-size:49px; line-height:1; font-weight:900; }
+        .card.metric span { display:block; margin-top:8px; font-size:23px; line-height:1.1; font-weight:800; }
+        .card.text strong,.card.bullets strong { display:block; margin-bottom:8px; font-size:26px; line-height:1.05; font-weight:900; }
+        .card.text span { display:block; font-size:18px; line-height:1.2; font-weight:800; }
+        .card.bullets { align-items:flex-start; text-align:left; }
+        .card.bullets ul { margin:4px 0 0 18px; padding:0; font-size:16px; line-height:1.5; font-weight:900; }
+        .card.bullets li { padding-left:8px; }
+        .card:nth-child(odd) { grid-column:1; }
+        .card:nth-child(even) { grid-column:2; }
+        .cards.only { width:min(706px, 100%); margin:0 auto; grid-template-columns:repeat(2, minmax(260px, 340px)); gap:22px; justify-content:center; padding-top:24px; }
+        .dashboard-link { display:inline-block; margin:18px 0 0; color:#0b3954; font-weight:800; }
+        @media (max-width:1000px) {
+            .kudos { padding:28px 20px; }
+            .stage { min-height:0; display:grid; gap:18px; }
+            .person { position:relative; left:auto; bottom:auto; width:min(420px, 100%); transform:none; margin:0 auto; }
+            .person img { height:360px; }
+            .person-info strong { font-size:26px; }
+            .person-info span { font-size:20px; }
+            .cards,.cards.only { display:grid; grid-template-columns:1fr; gap:14px; padding-top:0; }
+            .card:nth-child(n) { grid-column:auto; }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <section class="kudos">
+            {% if kudos_page %}
+                <div class="heading">{{ kudos_page.title }}</div>
+                <div class="stage">
+                    {% if kudos_page.display_type == "image_with_cards" and kudos_page.image %}
+                        <div class="person">
+                            <img src="{{ kudos_page.image.url }}" alt="{{ kudos_page.name }}">
+                            <div class="person-info"><strong>{{ kudos_page.name }}</strong><span>{{ kudos_page.designation }}</span></div>
+                        </div>
+                    {% endif %}
+                    <div class="cards {% if kudos_page.display_type == 'cards_only' %}only{% endif %}">
+                        {% for card in kudos_page.cards.all|slice:":10" %}
+                            <div class="card {{ card.card_type }}">
+                                {% if card.card_type == "metric" %}
+                                    <strong>{{ card.value }}</strong>
+                                    <span>{{ card.label }}</span>
+                                {% elif card.card_type == "bullets" %}
+                                    <strong>{{ card.title }}</strong>
+                                    <ul>
+                                        {% for item in card.bullet_items %}
+                                            <li>{{ item }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <strong>{{ card.title }}</strong>
+                                    <span>{{ card.content }}</span>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </section>
+        <a class="dashboard-link" href="{% url 'kudos_bullet_moments_dashboard' %}">Open dashboard</a>
+    </main>
+</body>
+</html>

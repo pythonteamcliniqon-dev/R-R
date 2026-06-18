@@ -1,0 +1,277 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Our Clients Say</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #eef2f4;
+            font-family: "Poppins", Arial, Helvetica, sans-serif;
+        }
+
+        .page {
+            width: min(1200px, calc(100% - 32px));
+            margin: 24px auto;
+        }
+
+        .says-slide {
+            position: relative;
+            min-height: 675px;
+            overflow: hidden;
+            color: #fff;
+            background: url("{% static 'decks/img/image(1).png' %}") center / cover no-repeat;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.24);
+        }
+
+        .heading {
+            position: absolute;
+            top: 36px;
+            left: 46px;
+            margin: 0;
+            font-size: 44px;
+            line-height: 1.05;
+            font-weight: 900;
+        }
+
+        .quote-card {
+            position: absolute;
+            top: 112px;
+            left: 46px;
+            width: auto;
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            border-radius: 14px;
+            padding: 24px 28px;
+            background: rgba(173, 185, 190, 0.42);
+        }
+
+        .quote-card p {
+            margin: 0 0 16px;
+            font-size: 17px;
+            line-height: 1.25;
+            font-weight: 900;
+        }
+
+        .quote-card strong {
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .chat-icon {
+            position: absolute;
+            top: 170px;
+            left: 342px;
+            display: grid;
+            place-items: center;
+            width: 78px;
+            height: 78px;
+            border-radius: 50%;
+            background: #12aef2;
+            box-shadow: 0 7px 0 rgba(8, 42, 62, 0.22);
+        }
+
+        .chat-icon::before {
+            content: "";
+            width: 35px;
+            height: 25px;
+            border-radius: 4px;
+            background: #fff;
+            clip-path: polygon(0 0, 100% 0, 100% 70%, 60% 70%, 42% 100%, 42% 70%, 0 70%);
+        }
+
+        .people {
+            position: absolute;
+            right: 56px;
+            bottom: 38px;
+            /* left: 58px; */
+            display: flex;
+            /* justify-content: space-between; */
+            align-items: flex-end;
+            
+        }
+
+        .people.has-team-leader {
+            left: 575px;
+            justify-content: flex-start;
+        }
+
+        .people.grid-mode {
+            left: 570px;
+            right: 52px;
+            top: 70px;
+            bottom: 56px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            align-content: start;
+            justify-items: center;
+           
+        }
+
+        .people.grid-mode.has-team-leader {
+            left: 575px;
+        }
+
+        .person {
+        
+            text-align: center;
+        }
+
+        .person img {
+            width: 166px;
+            height: 175px;
+            border-radius: 30px 30px 14px 14px;
+            clip-path: none;
+            object-fit: cover;
+            object-position: center top;
+            background: #fff;
+            
+        }
+
+        .person figcaption {
+            margin-top: 8px;
+            border-radius: 4px;
+            padding: 4px 8px;
+            color: #1a3970;
+            background: #fff;
+            font-size: 15px;
+            line-height: 1.15;
+            font-weight: 800;
+        }
+
+        .person figcaption span {
+            display: block;
+            color: #6680b5;
+            font-weight: 700;
+        }
+
+        .team-leader {
+            position: absolute;
+            left: 154px;
+            bottom: 30px;
+            width: 245px;
+            text-align: center;
+        }
+
+        .team-leader img {
+            width: 215px;
+            height: 215px;
+            border-radius: 46px 46px 20px 20px;
+            clip-path: none;
+            object-fit: cover;
+            object-position: center top;
+            background: #fff;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .team-leader figcaption {
+            margin-top: 8px;
+            border-radius: 5px;
+            padding: 7px 10px;
+            color: #1a3970;
+            background: #fff;
+            font-size: 15px;
+            line-height: 1.15;
+            font-weight: 900;
+        }
+
+        .team-leader figcaption span {
+            display: block;
+            color: #6680b5;
+            font-weight: 700;
+        }
+
+        .dashboard-link {
+            display: inline-block;
+            margin: 18px 0 0;
+            color: #0b3954;
+            font-weight: 800;
+        }
+
+        @media (max-width: 900px) {
+            .says-slide {
+                min-height: 1050px;
+            }
+
+            .heading,
+            .quote-card,
+            .chat-icon,
+            .people,
+            .people.grid-mode,
+            .team-leader {
+                position: relative;
+                inset: auto;
+            }
+
+            .heading {
+                padding: 34px 28px 0;
+                font-size: 38px;
+            }
+
+            .quote-card {
+                width: auto;
+                margin: 24px 28px;
+            }
+
+            .chat-icon {
+                margin: -12px 28px 24px auto;
+            }
+
+            .people,
+            .people.grid-mode {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(120px, 1fr));
+                padding: 0 28px 34px;
+            }
+
+            .people.has-team-leader {
+                left: auto;
+            }
+
+            .team-leader {
+                margin: 0 auto 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <section class="says-slide">
+            {% if says_page %}
+                <h1 class="heading">{{ says_page.heading }}</h1>
+                <div class="quote-card">
+                    <p>"{{ says_page.client_description }}"</p>
+                    <strong>- {{ says_page.client_name }} -</strong>
+                </div>
+                <div class="chat-icon" aria-hidden="true"></div>
+
+                {% if team_leader %}
+                    <figure class="team-leader">
+                        <img src="{{ team_leader.image.url }}" alt="{{ team_leader.name }}">
+                        <figcaption>{{ team_leader.name }}<span>{{ team_leader.designation }}</span></figcaption>
+                    </figure>
+                {% endif %}
+
+                <div class="people{% if people_count > 5 or team_leader and people_count > 3 %} grid-mode{% endif %}{% if team_leader %} has-team-leader{% endif %}">
+                    {% for person in regular_people %}
+                        <figure class="person">
+                            <img src="{{ person.image.url }}" alt="{{ person.name }}">
+                            <figcaption>{{ person.name }}<span>{{ person.designation }}</span></figcaption>
+                        </figure>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </section>
+
+        <a class="dashboard-link" href="{% url 'client_says_page_dashboard' %}">Open dashboard</a>
+    </main>
+</body>
+</html>

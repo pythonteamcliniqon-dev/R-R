@@ -1,0 +1,230 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Dates</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #eef2f4;
+            font-family: "Poppins", Arial, Helvetica, sans-serif;
+        }
+
+        .page {
+            width: min(1200px, calc(100% - 32px));
+            margin: 24px auto;
+        }
+
+        .client-date-slide {
+            position: relative;
+            min-height: 675px;
+            overflow: hidden;
+            color: #fff;
+            background: url("{% static 'decks/img/image(1).png' %}") center / cover no-repeat;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.24);
+        }
+
+        .copy {
+            position: absolute;
+            top: 46px;
+            left: 44px;
+            width: 350px;
+        }
+
+        .copy h1 {
+            margin: 0 0 14px;
+            font-size: 38px;
+            line-height: 1.08;
+            font-weight: 900;
+            text-transform: capitalize;
+        }
+
+        .copy p {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.45;
+            font-weight: 700;
+        }
+
+        .slide-description {
+            position: absolute;
+            left: 44px;
+            bottom: 42px;
+            margin: 0;
+            font-size: 34px;
+            line-height: 1.15;
+            font-weight: 400;
+        }
+
+        .handshake {
+            position: absolute;
+            left: 150px;
+            top: 300px;
+            width: 250px;
+            transform: translateX(-50%);
+            filter: drop-shadow(0 12px 12px rgba(0, 0, 0, 0.25));
+        }
+
+        .handshake.inside-panel {
+            left: 50%;
+            top: auto;
+            bottom: 24px;
+            width: 255px;
+        }
+
+        .client-panel {
+            position: absolute;
+            right: 42px;
+            top: 46px;
+            bottom: 0;
+            width: 660px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-bottom: 0;
+            border-radius: 14px 14px 0 0;
+            background: rgba(173, 185, 190, 0.34);
+            padding: 34px 46px 28px;
+        }
+
+        .client-panel.has-inside-image {
+            padding-bottom: 230px;
+        }
+
+        .client-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .client-list li {
+            position: relative;
+            margin: 0 0 14px;
+            padding-left: 34px;
+            font-size: 19px;
+            line-height: 1.25;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+        }
+
+        .client-list li::before {
+            content: "";
+            position: absolute;
+            top: 9px;
+            left: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 0 4px rgba(255, 255, 255, 0.6);
+        }
+
+        .client-list span {
+            display: block;
+            margin-top: 4px;
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .client-list.many li {
+            margin-bottom: 9px;
+            font-size: 15px;
+        }
+
+        .client-list.many span {
+            font-size: 12px;
+        }
+
+        .dashboard-link {
+            display: inline-block;
+            margin: 18px 0 0;
+            color: #0b3954;
+            font-weight: 800;
+        }
+
+        @media (max-width: 900px) {
+            .client-date-slide {
+                min-height: 900px;
+            }
+
+            .copy {
+                position: relative;
+                top: auto;
+                left: auto;
+                width: auto;
+                padding: 34px 28px 0;
+            }
+
+            .client-panel {
+                left: 28px;
+                right: 28px;
+                top: 215px;
+                width: auto;
+                padding: 28px;
+            }
+
+            .handshake {
+                display: none;
+            }
+
+            .handshake.inside-panel {
+                display: block;
+                width: 210px;
+            }
+
+            .client-panel.has-inside-image {
+                padding-bottom: 190px;
+            }
+
+            .slide-description {
+                left: 28px;
+                right: 28px;
+                bottom: 28px;
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <section class="client-date-slide">
+            <div class="copy">
+                <h1>{% if client_page %}{{ client_page.title }}{% endif %}</h1>
+                <p>{% if client_page %}{{ client_page.content }}{% endif %}</p>
+            </div>
+
+            {% if client_page.clients.all|length > 5 %}
+                <img class="handshake" src="{% static 'decks/img/image-7.png' %}" alt="">
+            {% endif %}
+
+            <div class="client-panel{% if client_page.clients.all|length <= 5 %} has-inside-image{% endif %}">
+                {% if client_page %}
+                    <ul class="client-list{% if client_page.clients.all|length > 8 %} many{% endif %}">
+                        {% for client in client_page.clients.all %}
+                            <li>
+                                {{ client.name }}
+                                <span>(WENT LIVE ON - {{ client.went_live_on|date:"m/d/y" }})</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                {% if client_page.clients.all|length <= 5 %}
+                    <img class="handshake inside-panel" src="{% static 'decks/img/image-7.png' %}" alt="">
+                {% endif %}
+            </div>
+
+            <p class="slide-description">{% if client_page %}{{ client_page.description }}{% endif %}</p>
+        </section>
+
+        <a class="dashboard-link" href="{% url 'client_date_page_dashboard' %}">Open dashboard</a>
+    </main>
+</body>
+</html>

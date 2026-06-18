@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kudos Moments Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --ink:#0b1f35; --muted:#64748b; --line:#d8e1ea; --accent:#11c7df; --panel:#fff; --wash:#f2f7f9; }
+        * { box-sizing: border-box; }
+        body { margin:0; min-height:100vh; color:var(--ink); background:var(--wash); font-family:"Poppins", Arial, sans-serif; }
+        a { color:inherit; }
+        .shell { width:min(1180px, calc(100% - 32px)); margin:0 auto; padding:32px 0; }
+        .topbar,.dashboard-brand,.menu { display:flex; align-items:center; }
+        .topbar { justify-content:space-between; gap:16px; margin-bottom:24px; }
+        .dashboard-brand { gap:12px; }
+        .dashboard-brand img { width:42px; height:42px; }
+        h1 { margin:0; font-size:28px; }
+        .view-link,.menu a { border:1px solid var(--line); border-radius:8px; padding:10px 14px; text-decoration:none; background:#fff; font-weight:800; }
+        .menu { gap:10px; margin-bottom:24px; flex-wrap:wrap; }
+        .menu a { color:var(--muted); }
+        .menu a.active { border-color:var(--accent); color:#061827; background:#dffafe; }
+        .layout { display:grid; grid-template-columns:1fr; gap:24px; }
+        .panel { border:1px solid var(--line); border-radius:8px; background:var(--panel); padding:22px; box-shadow:0 14px 36px rgba(11,31,53,.08); }
+        .form-title,.preview-title { margin:0 0 18px; font-size:20px; }
+        .field,.card-row { margin-bottom:16px; }
+        label { display:block; margin-bottom:7px; color:#243b53; font-size:14px; font-weight:700; }
+        input,select { width:100%; border:1px solid var(--line); border-radius:8px; padding:11px 12px; color:var(--ink); background:#fff; font:inherit; }
+        .card-row { border:1px solid var(--line); border-radius:8px; padding:14px; background:#fbfdff; }
+        .card-grid { display:grid; grid-template-columns:1fr 1fr 90px; gap:10px; }
+        .submit { width:100%; border:0; border-radius:8px; padding:12px 14px; color:#061827; background:var(--accent); font-weight:800; cursor:pointer; }
+        .preview-item { border:1px solid var(--line); border-radius:8px; padding:14px; background:#fff; }
+        .preview-grid { display:flex; gap:12px; flex-wrap:wrap; }
+        .preview-card { min-width:120px; border-radius:8px; padding:12px; background:#f8fafc; }
+        .preview-card strong,.preview-card span { display:block; }
+        .preview-card strong { font-size:22px; color:#082a74; }
+        .preview-card span { font-size:12px; color:var(--muted); }
+        @media (max-width:900px) { .card-grid { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+    <main class="shell">
+        <div class="topbar">
+            <div class="dashboard-brand">
+                <img src="{% static 'decks/img/cliniqon-mark.svg' %}" alt="Cliniqon">
+                <h1>Kudos Moments Dashboard</h1>
+            </div>
+            <a class="view-link" href="{% url 'kudos_moments_view' %}">View frontend</a>
+        </div>
+        <nav class="menu" aria-label="Dashboard menu">
+            <a class="{% if active_menu == 'first' %}active{% endif %}" href="{% url 'dashboard' %}">First Page</a>
+            <a class="{% if active_menu == 'next' %}active{% endif %}" href="{% url 'next_page_dashboard' %}">Next Page</a>
+            <a class="{% if active_menu == 'agency' %}active{% endif %}" href="{% url 'agency_page_dashboard' %}">Agency Page</a>
+            <a class="{% if active_menu == 'bullet' %}active{% endif %}" href="{% url 'bullet_page_dashboard' %}">Bullet Page</a>
+            <a class="{% if active_menu == 'client_date' %}active{% endif %}" href="{% url 'client_date_page_dashboard' %}">Client Date Page</a>
+            <a class="{% if active_menu == 'client_says' %}active{% endif %}" href="{% url 'client_says_page_dashboard' %}">Client Says Page</a>
+            <a class="{% if active_menu == 'gallery' %}active{% endif %}" href="{% url 'gallery_page_dashboard' %}">Gallery Page</a>
+            <a class="{% if active_menu == 'caption_slide' %}active{% endif %}" href="{% url 'caption_slide_page_dashboard' %}">Wishes</a>
+            <a class="{% if active_menu == 'new_joiners' %}active{% endif %}" href="{% url 'new_joiners_dashboard' %}">New Joiners</a>
+            <a class="{% if active_menu == 'promotions' %}active{% endif %}" href="{% url 'promotions_dashboard' %}">Promotions</a>
+            <a class="{% if active_menu == 'kudos_moments' %}active{% endif %}" href="{% url 'kudos_moments_dashboard' %}">Kudos Moments</a>
+            <a class="{% if active_menu == 'special_appreciation' %}active{% endif %}" href="{% url 'special_appreciation_dashboard' %}">Special Appreciation</a>
+            <a class="{% if active_menu == 'kudos_bullet_moments' %}active{% endif %}" href="{% url 'kudos_bullet_moments_dashboard' %}">Kudos Bullets</a>
+        </nav>
+        <div class="layout">
+            <section class="panel">
+                <h2 class="form-title">Add kudos moments</h2>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="field">{{ field.label_tag }}{{ field }}{{ field.errors }}</div>
+                    {% endfor %}
+                    {% for card in kudos_card_rows %}
+                        <div class="card-row">
+                            <input type="hidden" name="kudos_card_id" value="{% if card %}{{ card.id }}{% endif %}">
+                            <div class="card-grid">
+                                <div><label>Card value:</label><input type="text" name="kudos_card_value" value="{% if card %}{{ card.value }}{% endif %}" placeholder="98.06%"></div>
+                                <div><label>Card label:</label><input type="text" name="kudos_card_label" value="{% if card %}{{ card.label }}{% endif %}" placeholder="Quality Score"></div>
+                                <div><label>Order:</label><input type="number" name="kudos_card_order" min="1" max="10" value="{% if card %}{{ card.order }}{% else %}{{ forloop.counter }}{% endif %}"></div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <button class="submit" type="submit">Save kudos moments</button>
+                </form>
+            </section>
+            <section class="panel">
+                <h2 class="preview-title">Added kudos moments</h2>
+                {% for page in kudos_pages %}
+                    <article class="preview-item">
+                        <h3>{{ page.title }}</h3>
+                        <p>{{ page.get_display_type_display }}{% if page.name %} · {{ page.name }}{% endif %}</p>
+                        <div class="preview-grid">
+                            {% for card in page.cards.all %}
+                                <div class="preview-card"><strong>{{ card.value }}</strong><span>{{ card.label }}</span></div>
+                            {% endfor %}
+                        </div>
+                    </article>
+                {% empty %}
+                    <p>No kudos moments added yet.</p>
+                {% endfor %}
+            </section>
+        </div>
+    </main>
+</body>
+</html>

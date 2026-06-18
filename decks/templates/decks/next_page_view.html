@@ -1,0 +1,329 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Key Metrics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #eef2f4;
+            font-family: "Poppins", Arial, Helvetica, sans-serif;
+        }
+
+        .page {
+            width: min(1200px, calc(100% - 32px));
+            margin: 24px auto;
+        }
+
+        .metrics-slide {
+            position: relative;
+            min-height: 675px;
+            overflow: hidden;
+            color: #fff;
+            background: url("{% static 'decks/img/image(1).png' %}") center / cover no-repeat;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.24);
+        }
+
+        .slide-title {
+            position: absolute;
+            top: 44px;
+            left: 44px;
+            max-width: 285px;
+            margin: 0;
+            font-size: 45px;
+            line-height: 1.05;
+            font-weight: 900;
+            text-transform: capitalize;
+        }
+
+        .slide-description {
+            position: absolute;
+            left: 44px;
+            bottom: 42px;
+            margin: 0;
+            font-size: 34px;
+            line-height: 1.15;
+            font-weight: 400;
+        }
+
+        .metric-layout {
+            position: absolute;
+            z-index: 2;
+            top: 72px;
+            left: 437px;
+            right: 17px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            pointer-events: none;
+        }
+
+        .metric-layout.five-only {
+            top: 72px;
+            left: auto;
+            right: 428px;
+            justify-content: flex-start;
+        }
+
+       
+
+        .metric-stack {
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .metric-stack.left {
+            justify-items: end;
+            align-items: flex-end;
+            transform: translateX(-52px);
+        }
+
+        .metric-layout.five-only .metric-stack.left {
+            transform: none;
+        }
+
+        .metric-stack.right {
+            align-items: flex-start;
+            transform: translateX(22px);
+        }
+
+        .metric-card {
+            border: 5px solid rgba(180, 203, 207, 0.98);
+            border-radius: 10px;
+            padding: 6px 14px 7px;
+            background: #fff;
+            box-shadow: 0 4px 0 rgba(13, 38, 50, 0.26);
+            min-width: 178px;
+            width: max-content;
+            max-width: 250px;
+            pointer-events: auto;
+        }
+
+        .metric-card p {
+            margin: 0 0 1px;
+            color: #667085;
+            font-size: 16px;
+            line-height: 1.1;
+            font-weight: 700;
+            overflow-wrap: normal;
+            white-space: nowrap;
+        }
+
+        .metric-card strong {
+            display: block;
+            color: #000;
+            font-size: 39px;
+            line-height: 0.95;
+            font-weight: 900;
+            letter-spacing: 0;
+            overflow-wrap: normal;
+            white-space: nowrap;
+        }
+
+        .score-panel {
+            position: absolute;
+            left: 66%;
+            bottom: 0;
+            width: 410px;
+            height: 545px;
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            border-bottom: 0;
+            border-radius: 16px 16px 0 0;
+            background: rgba(173, 185, 190, 0.34);
+            transform: translateX(-50%);
+        }
+
+        .score-panel.five-only {
+            left: auto;
+            right: 74px;
+            transform: none;
+        }
+
+        .score-copy {
+            position: absolute;
+            top: 53px;
+            left: 127px;
+            min-width: 230px;
+        }
+
+        .score-copy p {
+            margin: 0 0 18px;
+            font-size: 29px;
+            line-height: 1;
+            font-weight: 800;
+        }
+
+        .score-copy strong {
+            display: block;
+            font-size: 58px;
+            line-height: 1;
+            font-weight: 900;
+        }
+
+        .graph {
+            position: absolute;
+            right: 38px;
+            bottom: 48px;
+            width: 295px;
+            height: 230px;
+            object-fit: contain;
+        }
+
+        .dashboard-link {
+            display: inline-block;
+            margin: 18px 0 0;
+            color: #0b3954;
+            font-weight: 800;
+        }
+
+        @media (max-width: 900px) {
+            .metrics-slide {
+                min-height: 860px;
+            }
+
+            .slide-title {
+                top: 34px;
+                left: 28px;
+                max-width: 330px;
+                font-size: 42px;
+            }
+
+            .metric-layout {
+                top: 225px;
+                left: 28px;
+                right: 28px;
+                display: grid;
+                gap: 12px;
+            }
+
+            .metric-layout.five-only {
+                top: 225px;
+                left: 28px;
+                right: 28px;
+            }
+
+            .metric-stack {
+                width: min(330px, calc(100% - 56px));
+                align-items: flex-start;
+            }
+
+            .metric-stack.left {
+                transform: none;
+            }
+
+            .metric-stack.right {
+                transform: none;
+            }
+
+            .metric-card {
+                max-width: 100%;
+            }
+
+            .metric-card p,
+            .metric-card strong {
+                white-space: normal;
+                overflow-wrap: anywhere;
+            }
+
+            .score-panel {
+                left: 28px;
+                right: 28px;
+                bottom: 92px;
+                width: auto;
+                height: 340px;
+                transform: none;
+            }
+
+            .score-panel.five-only {
+                left: 28px;
+                right: 28px;
+            }
+
+            .score-copy {
+                top: 32px;
+                left: 32px;
+                min-width: 0;
+                max-width: calc(100% - 64px);
+            }
+
+            .graph {
+                right: 18px;
+                bottom: 24px;
+                width: 230px;
+            }
+
+            .slide-description {
+                left: 28px;
+                right: 28px;
+                bottom: 28px;
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <section class="metrics-slide">
+            <h1 class="slide-title">{% if next_page %}{{ next_page.title }}{% else %}Key Metrics &amp; Outcomes{% endif %}</h1>
+            <p class="slide-description">{% if next_page %}{{ next_page.description }}{% else %}Coding - Overall{% endif %}</p>
+
+            <div class="metric-layout{% if next_page.cards.all|length <= 5 %} five-only{% endif %}">
+                {% if next_page %}
+                    {% if next_page.cards.all|length <= 5 %}
+                        <div class="metric-stack left">
+                            {% for card in next_page.cards.all|slice:":5" %}
+                                <article class="metric-card">
+                                    <p>{{ card.label }}</p>
+                                    <strong>{{ card.value }}</strong>
+                                </article>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="metric-stack left">
+                            {% for card in next_page.cards.all|slice:":5" %}
+                                <article class="metric-card">
+                                    <p>{{ card.label }}</p>
+                                    <strong>{{ card.value }}</strong>
+                                </article>
+                            {% endfor %}
+                        </div>
+                        <div class="metric-stack right">
+                            {% for card in next_page.cards.all|slice:"5:10" %}
+                                <article class="metric-card">
+                                    <p>{{ card.label }}</p>
+                                    <strong>{{ card.value }}</strong>
+                                </article>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+
+            <div class="score-panel{% if next_page.cards.all|length <= 5 %} five-only{% endif %}">
+                <div class="score-copy">
+                    {% if next_page %}
+                        <p>{{ next_page.score_title }}</p>
+                        <strong>{{ next_page.score_value }}</strong>
+                    {% endif %}
+                </div>
+
+                <img class="graph" src="{% static 'decks/img/image-6.png' %}" alt="">
+            </div>
+        </section>
+
+        <a class="dashboard-link" href="{% url 'next_page_dashboard' %}">Open dashboard</a>
+    </main>
+</body>
+</html>

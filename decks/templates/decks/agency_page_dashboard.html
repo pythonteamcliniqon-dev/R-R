@@ -1,0 +1,326 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agency Page Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #0b1f35;
+            --muted: #64748b;
+            --line: #d8e1ea;
+            --accent: #11c7df;
+            --panel: #ffffff;
+            --wash: #f2f7f9;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--ink);
+            background: var(--wash);
+            font-family: "Poppins", Arial, Helvetica, sans-serif;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        .shell {
+            width: min(1180px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 32px 0;
+        }
+
+        .topbar,
+        .dashboard-brand,
+        .menu {
+            display: flex;
+            align-items: center;
+        }
+
+        .topbar {
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .dashboard-brand {
+            gap: 12px;
+        }
+
+        .dashboard-brand img {
+            width: 42px;
+            height: 42px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .view-link,
+        .menu a,
+        .add-button {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 10px 14px;
+            text-decoration: none;
+            background: #fff;
+            font-weight: 800;
+        }
+
+        .menu {
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .menu a {
+            color: var(--muted);
+        }
+
+        .menu a.active {
+            border-color: var(--accent);
+            color: #061827;
+            background: #dffafe;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 470px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .panel {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--panel);
+            padding: 22px;
+            box-shadow: 0 14px 36px rgba(11, 31, 53, 0.08);
+        }
+
+        .form-title,
+        .preview-title {
+            margin: 0 0 18px;
+            font-size: 20px;
+        }
+
+        .field,
+        .agency-row {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            color: #243b53;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 11px 12px;
+            color: var(--ink);
+            background: #fff;
+            font: inherit;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        .agency-grid {
+            display: grid;
+            grid-template-columns: 1fr 90px;
+            gap: 10px;
+        }
+
+        .section-heading {
+            margin: 24px 0 12px;
+            color: var(--muted);
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .add-button {
+            width: 100%;
+            margin-bottom: 16px;
+            color: #061827;
+            cursor: pointer;
+        }
+
+        .submit {
+            width: 100%;
+            border: 0;
+            border-radius: 8px;
+            padding: 12px 14px;
+            color: #061827;
+            background: var(--accent);
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .preview-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .preview-item {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 14px;
+            background: #fff;
+        }
+
+        .preview-item h3 {
+            margin: 0 0 8px;
+        }
+
+        .preview-item p,
+        .preview-item li {
+            color: var(--muted);
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .agency-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="shell">
+        <div class="topbar">
+            <div class="dashboard-brand">
+                <img src="{% static 'decks/img/cliniqon-mark.svg' %}" alt="Cliniqon">
+                <h1>Agency Page Dashboard</h1>
+            </div>
+            <a class="view-link" href="{% url 'agency_page_view' %}">View frontend</a>
+        </div>
+
+        <nav class="menu" aria-label="Dashboard menu">
+            <a class="{% if active_menu == 'first' %}active{% endif %}" href="{% url 'dashboard' %}">First Page</a>
+            <a class="{% if active_menu == 'next' %}active{% endif %}" href="{% url 'next_page_dashboard' %}">Next Page</a>
+            <a class="{% if active_menu == 'agency' %}active{% endif %}" href="{% url 'agency_page_dashboard' %}">Agency Page</a>
+            <a class="{% if active_menu == 'bullet' %}active{% endif %}" href="{% url 'bullet_page_dashboard' %}">Bullet Page</a>
+            <a class="{% if active_menu == 'client_date' %}active{% endif %}" href="{% url 'client_date_page_dashboard' %}">Client Date Page</a>
+            <a class="{% if active_menu == 'client_says' %}active{% endif %}" href="{% url 'client_says_page_dashboard' %}">Client Says Page</a>
+            <a class="{% if active_menu == 'gallery' %}active{% endif %}" href="{% url 'gallery_page_dashboard' %}">Gallery Page</a>
+            <a class="{% if active_menu == 'caption_slide' %}active{% endif %}" href="{% url 'caption_slide_page_dashboard' %}">Wishes</a>
+            <a class="{% if active_menu == 'new_joiners' %}active{% endif %}" href="{% url 'new_joiners_dashboard' %}">New Joiners</a>
+            <a class="{% if active_menu == 'promotions' %}active{% endif %}" href="{% url 'promotions_dashboard' %}">Promotions</a>
+            <a class="{% if active_menu == 'kudos_moments' %}active{% endif %}" href="{% url 'kudos_moments_dashboard' %}">Kudos Moments</a>
+            <a class="{% if active_menu == 'special_appreciation' %}active{% endif %}" href="{% url 'special_appreciation_dashboard' %}">Special Appreciation</a>
+            <a class="{% if active_menu == 'kudos_bullet_moments' %}active{% endif %}" href="{% url 'kudos_bullet_moments_dashboard' %}">Kudos Bullets</a>
+        </nav>
+
+        <div class="layout">
+            <section class="panel">
+                <h2 class="form-title">Add agency page</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="field">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {{ field.errors }}
+                        </div>
+                    {% endfor %}
+
+                    <h3 class="section-heading">Agency names</h3>
+                    {{ formset.management_form }}
+                    <div id="agency-formset">
+                        {% for agency_form in formset %}
+                            <div class="agency-row">
+                                {{ agency_form.id }}
+                                <div class="agency-grid">
+                                    <div>
+                                        {{ agency_form.name.label_tag }}
+                                        {{ agency_form.name }}
+                                        {{ agency_form.name.errors }}
+                                    </div>
+                                    <div>
+                                        {{ agency_form.order.label_tag }}
+                                        {{ agency_form.order }}
+                                        {{ agency_form.order.errors }}
+                                    </div>
+                                </div>
+                                {% if agency_form.DELETE %}
+                                    <div class="field">
+                                        {{ agency_form.DELETE }} {{ agency_form.DELETE.label_tag }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <button class="add-button" type="button" id="add-agency">+ Add agency</button>
+                    <button class="submit" type="submit">Save agency page</button>
+                </form>
+            </section>
+
+            <section class="panel">
+                <h2 class="preview-title">Added agency pages</h2>
+                <div class="preview-list">
+                    {% for page in agency_pages %}
+                        <article class="preview-item">
+                            <h3>{{ page.title }}</h3>
+                            <p>{{ page.content }}</p>
+                            <ol>
+                                {% for agency in page.agencies.all %}
+                                    <li>{{ agency.name }}</li>
+                                {% endfor %}
+                            </ol>
+                        </article>
+                    {% empty %}
+                        <p>No agency page items added yet.</p>
+                    {% endfor %}
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        const addButton = document.getElementById("add-agency");
+        const formset = document.getElementById("agency-formset");
+        const totalForms = document.getElementById("id_agencies-TOTAL_FORMS");
+
+        addButton.addEventListener("click", () => {
+            const index = Number(totalForms.value);
+            const row = document.createElement("div");
+            row.className = "agency-row";
+            row.innerHTML = `
+                <div class="agency-grid">
+                    <div>
+                        <label for="id_agencies-${index}-name">Name:</label>
+                        <input type="text" name="agencies-${index}-name" maxlength="200" id="id_agencies-${index}-name">
+                    </div>
+                    <div>
+                        <label for="id_agencies-${index}-order">Order:</label>
+                        <input type="number" name="agencies-${index}-order" min="1" value="${index + 1}" id="id_agencies-${index}-order">
+                    </div>
+                </div>
+            `;
+            formset.appendChild(row);
+            totalForms.value = index + 1;
+        });
+    </script>
+</body>
+</html>

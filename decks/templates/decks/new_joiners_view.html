@@ -1,0 +1,214 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Joiners</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #eef2f4;
+            font-family: "Poppins", Arial, Helvetica, sans-serif;
+        }
+
+        .page {
+            width: min(1200px, calc(100% - 32px));
+            margin: 24px auto;
+        }
+
+        .new-joiners {
+            min-height: 675px;
+            overflow: hidden;
+            color: #fff;
+            background: url("{% static 'decks/img/image(1).png' %}") center / cover no-repeat;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.24);
+            padding: 30px 36px 32px;
+        }
+
+        .slide-heading {
+            margin: 0 0 12px;
+            text-align: center;
+        }
+
+        .slide-title {
+            margin: 0;
+            font-size: 50px;
+            line-height: 1;
+            font-weight: 900;
+            letter-spacing: 0;
+            text-shadow: 0 3px 4px rgba(0, 0, 0, 0.18);
+        }
+
+        .caption {
+            margin: 4px 0 0;
+            font-family: "Brush Script MT", "Segoe Script", cursive;
+            font-size: 34px;
+            line-height: 1.05;
+            font-weight: 400;
+            text-shadow: 0 3px 4px rgba(0, 0, 0, 0.22);
+        }
+
+        .people-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 16px;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .people-grid.is-five {
+            min-height: 470px;
+            align-content: center;
+            align-items: center;
+        }
+
+        .people-grid.is-five .person-card {
+            flex-basis: 180px;
+        }
+
+        .person-card {
+            flex: 0 1 calc((100% - 64px) / 5);
+            max-width: 210px;
+            min-width: 0;
+            margin: 0;
+            text-align: center;
+        }
+
+        .portrait-wrap {
+            position: relative;
+            width: min(190px, 100%);
+            aspect-ratio: 1;
+            margin: 0 auto -8px;
+            border-radius: 999px;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at 50% 6%, rgba(255, 255, 255, 0.58) 0 18%, rgba(255, 255, 255, 0.18) 38%, transparent 66%),
+                linear-gradient(180deg, rgba(217, 233, 237, 0.86) 0%, rgba(126, 155, 168, 0.94) 100%);
+            box-shadow: inset 0 12px 26px rgba(255, 255, 255, 0.18);
+        }
+
+        .portrait-wrap::after {
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.20), transparent 34%);
+            content: "";
+            pointer-events: none;
+        }
+
+        .portrait-wrap img {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center bottom;
+            display: block;
+        }
+
+        .person-info {
+            min-height: 68px;
+            border-radius: 6px;
+            padding: 9px 10px;
+            color: #0b2b67;
+            background: #fff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+        }
+
+        .person-name,
+        .person-designation {
+            display: block;
+            overflow-wrap: anywhere;
+        }
+
+        .person-name {
+            font-size: 16px;
+            line-height: 1.1;
+            font-weight: 800;
+        }
+
+        .person-designation {
+            margin-top: 3px;
+            font-size: 15px;
+            line-height: 1.15;
+        }
+
+        .dashboard-link {
+            display: inline-block;
+            margin: 18px 0 0;
+            color: #0b3954;
+            font-weight: 800;
+        }
+
+        @media (max-width: 1000px) {
+            .new-joiners {
+                padding: 34px 24px 40px;
+            }
+
+            .slide-title {
+                font-size: 42px;
+            }
+
+            .person-card {
+                flex-basis: calc((100% - 16px) / 2);
+            }
+
+            .people-grid.is-five {
+                min-height: auto;
+            }
+
+            .people-grid.is-five .person-card {
+                flex-basis: calc((100% - 16px) / 2);
+            }
+
+            .caption {
+                font-size: 30px;
+            }
+
+            .person-name {
+                font-size: 14px;
+            }
+
+            .person-designation {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <section class="new-joiners">
+            {% if new_joiners_page %}
+                <header class="slide-heading">
+                    <h1 class="slide-title">{{ new_joiners_page.title }}</h1>
+                    <p class="caption">{{ new_joiners_page.caption }}</p>
+                </header>
+                {% with joiners=new_joiners_page.joiners.all %}
+                    <div class="people-grid {% if joiners|length == 5 %}is-five{% endif %}">
+                        {% for joiner in joiners|slice:":10" %}
+                            <figure class="person-card">
+                                <div class="portrait-wrap">
+                                    <img src="{{ joiner.image.url }}" alt="{{ joiner.name }}">
+                                </div>
+                                <figcaption class="person-info">
+                                    <span class="person-name">{{ joiner.name }}</span>
+                                    <span class="person-designation">{{ joiner.designation }}</span>
+                                </figcaption>
+                            </figure>
+                        {% endfor %}
+                    </div>
+                {% endwith %}
+            {% endif %}
+        </section>
+
+        <a class="dashboard-link" href="{% url 'new_joiners_dashboard' %}">Open dashboard</a>
+    </main>
+</body>
+</html>

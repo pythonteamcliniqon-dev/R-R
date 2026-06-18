@@ -1,0 +1,191 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Additions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #eef2f4;
+            font-family: "Poppins", Arial, Helvetica, sans-serif;
+        }
+
+        .page {
+            width: min(1200px, calc(100% - 32px));
+            margin: 24px auto;
+        }
+
+        .agency-slide {
+            position: relative;
+            min-height: 675px;
+            overflow: hidden;
+            color: #fff;
+            background: url("{% static 'decks/img/image(1).png' %}") center / cover no-repeat;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.24);
+        }
+
+        .copy {
+            position: absolute;
+            top: 46px;
+            left: 44px;
+            width: 330px;
+        }
+
+        .copy h1 {
+            margin: 0 0 14px;
+            font-size: 38px;
+            line-height: 1.08;
+            font-weight: 900;
+            text-transform: capitalize;
+        }
+
+        .copy p {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.45;
+            font-weight: 700;
+        }
+
+        .agency-panel {
+            position: absolute;
+            right: 42px;
+            top: 46px;
+            bottom: 0;
+            width: 690px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-bottom: 0;
+            border-radius: 14px 14px 0 0;
+            background: rgba(173, 185, 190, 0.34);
+            padding: 32px 32px 28px;
+        }
+
+        .agency-panel.has-inside-image {
+            padding-bottom: 245px;
+        }
+
+        .agency-list {
+            margin: 0 auto;
+            max-width: 575px;
+            padding: 0;
+            list-style: none;
+            text-align: center;
+        }
+
+        .agency-list li {
+            margin: 0 0 10px;
+            font-size: 29px;
+            line-height: 1.15;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+        }
+
+        .agency-list.many {
+            max-width: 640px;
+            text-align: left;
+            column-count: 2;
+            column-gap: 32px;
+        }
+
+        .agency-list.many li {
+            break-inside: avoid;
+            font-size: 15px;
+        }
+
+        .handshake {
+            position: absolute;
+            left: 50%;
+            bottom: 24px;
+            width: 320px;
+            transform: translateX(-50%);
+            filter: drop-shadow(0 12px 12px rgba(0, 0, 0, 0.25));
+        }
+
+        .handshake.outside-panel {
+            left: 165px;
+            bottom: 118px;
+            width: 290px;
+        }
+
+        .dashboard-link {
+            display: inline-block;
+            margin: 18px 0 0;
+            color: #0b3954;
+            font-weight: 800;
+        }
+
+        @media (max-width: 900px) {
+            .agency-slide {
+                min-height: 860px;
+            }
+
+            .copy {
+                position: relative;
+                top: auto;
+                left: auto;
+                width: auto;
+                padding: 34px 28px 0;
+            }
+
+            .agency-panel {
+                left: 28px;
+                right: 28px;
+                top: 210px;
+                width: auto;
+            }
+
+            .agency-panel.has-inside-image {
+                padding-bottom: 190px;
+            }
+
+            .agency-list.many {
+                column-count: 1;
+            }
+
+            .handshake.outside-panel {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <section class="agency-slide">
+            <div class="copy">
+                <h1>{% if agency_page %}{{ agency_page.title }}{% endif %}</h1>
+                <p>{% if agency_page %}{{ agency_page.content }}{% endif %}</p>
+            </div>
+
+            {% if agencies|length > 6 %}
+                <img class="handshake outside-panel" src="{% static agency_image %}" alt="">
+            {% endif %}
+
+            <div class="agency-panel{% if agencies|length <= 6 %} has-inside-image{% endif %}">
+                {% if agency_page %}
+                    <ul class="agency-list{% if agencies|length > 10 %} many{% endif %}">
+                        {% for agency in agencies %}
+                            <li>{{ agency.name }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                {% if agencies|length <= 6 %}
+                    <img class="handshake" src="{% static agency_image %}" alt="">
+                {% endif %}
+            </div>
+        </section>
+
+        <a class="dashboard-link" href="{% url 'agency_page_dashboard' %}">Open dashboard</a>
+    </main>
+</body>
+</html>

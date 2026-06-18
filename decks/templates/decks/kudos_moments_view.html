@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kudos Moments</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing:border-box; }
+        body { margin:0; min-height:100vh; background:#eef2f4; font-family:"Poppins", Arial, sans-serif; }
+        .page { width:min(1200px, calc(100% - 32px)); margin:24px auto; }
+        .kudos { position:relative; min-height:675px; overflow:hidden; color:#fff; background:url("{% static 'decks/img/419981207.png' %}") center/cover no-repeat; box-shadow:0 2px 10px rgba(0,0,0,.24); padding:36px 56px; }
+        .heading { display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:28px; color:#fff; font-size:22px; font-weight:800; }
+        .heading:before,.heading:after { content:""; height:1px; flex:1; background:rgba(255,255,255,.55); }
+        .stage { position:relative; min-height:530px; }
+        .stage.cards-only { display:flex; align-items:center; justify-content:center; }
+        .person { position:absolute; left:50%; bottom:33px; width:430px; transform:translateX(-50%); text-align:center; z-index:2; }
+        .person img { width:100%; max-height:420px; object-fit:contain; display:block; }
+        .person-name { display:inline-block; min-width:440px; margin-top:-14px; border-radius:14px; padding:10px 24px; color:#082a74; background:#fff; font-size:32px; line-height:1.15; font-weight:900; }
+        .person-name span { display:block; margin-top:6px; font-size:25px; font-weight:800; }
+        .cards { display:grid; grid-template-columns:repeat(2, 292px); justify-content:space-between; gap:52px 0;  }
+        .card { border-radius:28px; padding:20px 20px 18px; color:#082a74; background:#fff; text-align:center; }
+        .card strong { display:block; font-size:49px; line-height:1; font-weight:900; }
+        .card span { display:block; margin-top:6px; font-size:23px; line-height:1.15; font-weight:800; }
+        .cards.only {  grid-template-columns:repeat(2, minmax(220px, 292px)); justify-content:center; align-content:center; column-gap: 419px; min-height:0; padding-top:0; }
+        .dashboard-link { display:inline-block; margin:18px 0 0; color:#0b3954; font-weight:800; }
+        @media (max-width:1000px) {
+            .kudos { padding:30px 20px; }
+            .stage { min-height:0; display:grid; gap:18px; }
+            .stage.cards-only { display:grid; }
+            .person { position:relative; left:auto; bottom:auto; width:min(360px, 100%); transform:none; margin:0 auto; }
+            .person-name { min-width:0; width:100%; font-size:24px; }
+            .person-name span { font-size:18px; }
+            .cards,.cards.only { display:grid; grid-template-columns:1fr; gap:14px; min-height:0; padding-top:0; }
+            .card strong { font-size:38px; }
+            .card span { font-size:18px; }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <section class="kudos">
+            {% if kudos_page %}
+                <div class="heading">{{ kudos_page.title }}</div>
+                <div class="stage {% if kudos_page.display_type == 'cards_only' %}cards-only{% endif %}">
+                    {% if kudos_page.display_type == "image_with_cards" and kudos_page.image %}
+                        <div class="person">
+                            <img src="{{ kudos_page.image.url }}" alt="{{ kudos_page.name }}">
+                            <div class="person-name">{{ kudos_page.name }}<span>{{ kudos_page.designation }}</span></div>
+                        </div>
+                    {% endif %}
+                    <div class="cards {% if kudos_page.display_type == 'cards_only' %}only{% endif %}">
+                        {% for card in kudos_page.cards.all|slice:":10" %}
+                            <div class="card"><strong>{{ card.value }}</strong><span>{{ card.label }}</span></div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </section>
+        <a class="dashboard-link" href="{% url 'kudos_moments_dashboard' %}">Open dashboard</a>
+    </main>
+</body>
+</html>

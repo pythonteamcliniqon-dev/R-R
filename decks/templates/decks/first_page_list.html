@@ -1,0 +1,255 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>First Page</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #071c34;
+            --deep: #0d2a47;
+            --mist: #9fc3bd;
+            --white: #ffffff;
+            --line: rgba(255, 255, 255, 0.4);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #eef2f4;
+            font-family: "Poppins", Arial, Helvetica, sans-serif;
+        }
+
+        .page {
+            width: min(1200px, calc(100% - 32px));
+            margin: 24px auto;
+        }
+
+        .hero {
+            position: relative;
+            min-height: 675px;
+            overflow: hidden;
+            border-radius: 0;
+            color: var(--white);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-image:
+                radial-gradient(circle at 52% 48%, rgba(170, 218, 203, 0.27) 0 28%, rgba(170, 218, 203, 0.11) 29% 42%, transparent 43%),
+                radial-gradient(circle at 56% 0%, rgba(181, 218, 204, 0.58), transparent 40%),
+                linear-gradient(135deg, #173a58 0%, #7ba49f 42%, #102e4e 72%, #07192f 100%);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.24);
+        }
+
+        .hero.has-background {
+            background:
+                linear-gradient(to top, rgba(5, 17, 33, 0.22), rgba(5, 17, 33, 0.03)),
+                var(--hero-background),
+                linear-gradient(135deg, #173a58 0%, #7ba49f 42%, #102e4e 72%, #07192f 100%);
+            background-size: cover;
+            background-position: center;
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: auto 0 0;
+            height: 55%;
+            background: linear-gradient(to top, rgba(5, 17, 33, 0.78), transparent);
+            pointer-events: none;
+        }
+
+        .brand {
+            position: relative;
+            z-index: 1;
+            margin: 76px 0 0 76px;
+            width: 178px;
+            max-width: 42%;
+        }
+
+        .brand img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .hero-content {
+            position: absolute;
+            z-index: 1;
+            left: 76px;
+            right: 76px;
+            bottom: 74px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 28px;
+            align-items: end;
+        }
+
+        .hero h1 {
+            max-width: 690px;
+            margin: 0 0 14px;
+            font-size: clamp(64px, 7.7vw, 96px);
+            line-height: 0.92;
+            letter-spacing: 0;
+            font-weight: 900;
+            text-transform: capitalize;
+        }
+
+        .hero p {
+            margin: 0;
+            font-size: 24px;
+            line-height: 1.2;
+            font-weight: 500;
+            
+        }
+
+        .date-pill {
+            min-width: 170px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 13px 22px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.18);
+            font-size: 26px;
+            font-weight: 500;
+            backdrop-filter: blur(4px);
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 18px;
+            margin-top: 24px;
+        }
+
+        .card {
+            overflow: hidden;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 14px 34px rgba(7, 28, 52, 0.12);
+        }
+
+        .card img {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            display: block;
+        }
+
+        .card-body {
+            padding: 16px;
+        }
+
+        .card h2 {
+            margin: 0 0 8px;
+            color: #081c32;
+            font-size: 20px;
+            text-transform: capitalize;
+        }
+
+        .card p {
+            margin: 0;
+            color: #53657a;
+            line-height: 1.5;
+        }
+
+        .card time {
+            display: block;
+            margin-top: 12px;
+            color: #0d7890;
+            font-weight: 800;
+        }
+
+        .empty {
+            margin: 32px 0 0;
+            color: #53657a;
+            text-align: center;
+        }
+
+        .dashboard-link {
+            display: inline-block;
+            margin: 18px 0 0;
+            color: #0b3954;
+            font-weight: 800;
+        }
+
+        @media (max-width: 720px) {
+            .hero {
+                min-height: 560px;
+            }
+
+            .brand {
+                margin: 42px 0 0 28px;
+                width: 142px;
+            }
+
+            .hero-content {
+                left: 28px;
+                right: 28px;
+                bottom: 34px;
+                grid-template-columns: 1fr;
+            }
+
+            .hero p {
+                font-size: 18px;
+            }
+
+            .date-pill {
+                width: fit-content;
+                min-width: 0;
+                font-size: 20px;
+            }
+
+            .hero h1 {
+                font-size: clamp(44px, 14vw, 64px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        {% with first_pages|first as latest %}
+            <section class="hero{% if latest %} has-background{% endif %}"{% if latest %} style="--hero-background: url('{{ latest.image.url }}');"{% endif %}>
+                <div class="brand">
+                    <img src="{% static 'decks/img/logo-1.png' %}" alt="Cliniqon">
+                </div>
+
+                <div class="hero-content">
+                    <div>
+                        <h1>{% if latest %}{{ latest.title }}{% else %}Together We Achieve{% endif %}</h1>
+                        <p>{% if latest %}{{ latest.description }}{% else %}Monthly Business Summary. Rewards &amp; Recognitions.{% endif %}</p>
+                    </div>
+                    <div class="date-pill">
+                        {% if latest %}{{ latest.get_month_display }} {{ latest.year }}{% else %}May 2026{% endif %}
+                    </div>
+                </div>
+            </section>
+        {% endwith %}
+
+        <a class="dashboard-link" href="{% url 'dashboard' %}">Open dashboard</a>
+
+        <section class="cards">
+            {% for item in first_pages %}
+                <article class="card">
+                    <img src="{{ item.image.url }}" alt="{{ item.title }}">
+                    <div class="card-body">
+                        <h2>{{ item.title }}</h2>
+                        <p>{{ item.description }}</p>
+                        <time>{{ item.get_month_display }} {{ item.year }}</time>
+                    </div>
+                </article>
+            {% empty %}
+                <p class="empty">No cards added yet. Open the dashboard to add your first item.</p>
+            {% endfor %}
+        </section>
+    </main>
+</body>
+</html>

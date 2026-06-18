@@ -1,0 +1,261 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery Page Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #0b1f35;
+            --muted: #64748b;
+            --line: #d8e1ea;
+            --accent: #11c7df;
+            --panel: #ffffff;
+            --wash: #f2f7f9;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--ink);
+            background: var(--wash);
+            font-family: "Poppins", Arial, Helvetica, sans-serif;
+        }
+
+        a { color: inherit; }
+
+        .shell {
+            width: min(1180px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 32px 0;
+        }
+
+        .topbar,
+        .dashboard-brand,
+        .menu {
+            display: flex;
+            align-items: center;
+        }
+
+        .topbar {
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .dashboard-brand { gap: 12px; }
+
+        .dashboard-brand img {
+            width: 42px;
+            height: 42px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .view-link,
+        .menu a {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 10px 14px;
+            text-decoration: none;
+            background: #fff;
+            font-weight: 800;
+        }
+
+        .menu {
+            gap: 10px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .menu a { color: var(--muted); }
+
+        .menu a.active {
+            border-color: var(--accent);
+            color: #061827;
+            background: #dffafe;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 520px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .panel {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--panel);
+            padding: 22px;
+            box-shadow: 0 14px 36px rgba(11, 31, 53, 0.08);
+        }
+
+        .form-title,
+        .preview-title {
+            margin: 0 0 18px;
+            font-size: 20px;
+        }
+
+        .field,
+        .image-row {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            color: #243b53;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        input {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 11px 12px;
+            color: var(--ink);
+            background: #fff;
+            font: inherit;
+        }
+
+        .image-row {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 14px;
+            background: #fbfdff;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: 1fr 90px;
+            gap: 10px;
+        }
+
+        .submit {
+            width: 100%;
+            border: 0;
+            border-radius: 8px;
+            padding: 12px 14px;
+            color: #061827;
+            background: var(--accent);
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .preview-item {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 14px;
+            background: #fff;
+        }
+
+        .preview-item h3 { margin: 0 0 8px; }
+
+        .preview-images {
+            display: flex;
+            gap: 8px;
+        }
+
+        .preview-images img {
+            width: 72px;
+            height: 52px;
+            object-fit: cover;
+        }
+
+        @media (max-width: 900px) {
+            .layout,
+            .image-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="shell">
+        <div class="topbar">
+            <div class="dashboard-brand">
+                <img src="{% static 'decks/img/cliniqon-mark.svg' %}" alt="Cliniqon">
+                <h1>Gallery Page Dashboard</h1>
+            </div>
+            <a class="view-link" href="{% url 'gallery_page_view' %}">View frontend</a>
+        </div>
+
+        <nav class="menu" aria-label="Dashboard menu">
+            <a class="{% if active_menu == 'first' %}active{% endif %}" href="{% url 'dashboard' %}">First Page</a>
+            <a class="{% if active_menu == 'next' %}active{% endif %}" href="{% url 'next_page_dashboard' %}">Next Page</a>
+            <a class="{% if active_menu == 'agency' %}active{% endif %}" href="{% url 'agency_page_dashboard' %}">Agency Page</a>
+            <a class="{% if active_menu == 'bullet' %}active{% endif %}" href="{% url 'bullet_page_dashboard' %}">Bullet Page</a>
+            <a class="{% if active_menu == 'client_date' %}active{% endif %}" href="{% url 'client_date_page_dashboard' %}">Client Date Page</a>
+            <a class="{% if active_menu == 'client_says' %}active{% endif %}" href="{% url 'client_says_page_dashboard' %}">Client Says Page</a>
+            <a class="{% if active_menu == 'gallery' %}active{% endif %}" href="{% url 'gallery_page_dashboard' %}">Gallery Page</a>
+            <a class="{% if active_menu == 'caption_slide' %}active{% endif %}" href="{% url 'caption_slide_page_dashboard' %}">Wishes</a>
+            <a class="{% if active_menu == 'new_joiners' %}active{% endif %}" href="{% url 'new_joiners_dashboard' %}">New Joiners</a>
+            <a class="{% if active_menu == 'promotions' %}active{% endif %}" href="{% url 'promotions_dashboard' %}">Promotions</a>
+            <a class="{% if active_menu == 'kudos_moments' %}active{% endif %}" href="{% url 'kudos_moments_dashboard' %}">Kudos Moments</a>
+            <a class="{% if active_menu == 'special_appreciation' %}active{% endif %}" href="{% url 'special_appreciation_dashboard' %}">Special Appreciation</a>
+            <a class="{% if active_menu == 'kudos_bullet_moments' %}active{% endif %}" href="{% url 'kudos_bullet_moments_dashboard' %}">Kudos Bullets</a>
+        </nav>
+
+        <div class="layout">
+            <section class="panel">
+                <h2 class="form-title">Add gallery page</h2>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="field">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {{ field.errors }}
+                        </div>
+                    {% endfor %}
+
+                    {% for image in gallery_image_rows %}
+                        <div class="image-row">
+                            <input type="hidden" name="gallery_image_id" value="{% if image %}{{ image.id }}{% endif %}">
+                            <div class="image-grid">
+                                <div>
+                                    <label>Image:</label>
+                                    <input type="file" name="gallery_image_{{ forloop.counter }}" accept="image/*">
+                                </div>
+                                <div>
+                                    <label>Order:</label>
+                                    <input type="number" name="gallery_image_order" min="1" max="5" value="{% if image %}{{ image.order }}{% else %}{{ forloop.counter }}{% endif %}">
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    <button class="submit" type="submit">Save gallery page</button>
+                </form>
+            </section>
+
+            <section class="panel">
+                <h2 class="preview-title">Added gallery pages</h2>
+                {% for gallery in gallery_pages %}
+                    <article class="preview-item">
+                        <h3>{{ gallery.caption }}</h3>
+                        <div class="preview-images">
+                            {% for image in gallery.images.all %}
+                                <img src="{{ image.image.url }}" alt="">
+                            {% endfor %}
+                        </div>
+                    </article>
+                {% empty %}
+                    <p>No gallery page items added yet.</p>
+                {% endfor %}
+            </section>
+        </div>
+    </main>
+</body>
+</html>
