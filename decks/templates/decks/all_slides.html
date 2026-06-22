@@ -1,0 +1,580 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Slides</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #0b1f35;
+            --muted: #64748b;
+            --line: #d8e1ea;
+            --accent: #11c7df;
+            --panel: #ffffff;
+            --wash: #f2f7f9;
+            --danger: #b42318;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--ink);
+            background: var(--wash);
+            font-family: "Poppins", Arial, Helvetica, sans-serif;
+        }
+
+        .shell {
+            width: min(1280px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 28px 0 40px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand img {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: var(--ink);
+            background: #fff;
+            font: inherit;
+            font-weight: 800;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .button.remove {
+            color: var(--danger);
+        }
+
+        .button.primary {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: #061827;
+        }
+
+        .deck {
+            display: grid;
+            gap: 24px;
+            min-width: 0;
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: 260px minmax(0, 1fr);
+            gap: 18px;
+            align-items: start;
+            height: calc(100vh - 118px);
+            min-height: 560px;
+        }
+
+        .preview-rail {
+            height: 100%;
+            overflow: auto;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 10px;
+            background: #fff;
+            box-shadow: 0 14px 36px rgba(11, 31, 53, 0.08);
+        }
+
+        .preview-rail h2 {
+            margin: 0 0 10px;
+            font-size: 15px;
+        }
+
+        .mini-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .mini-slide {
+            display: block;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 8px;
+            color: var(--ink);
+            background: #f8fafc;
+            text-decoration: none;
+            cursor: grab;
+        }
+
+        .mini-slide.is-active {
+            border-color: var(--accent);
+            background: #dffafe;
+        }
+
+        .mini-slide.is-dragging {
+            opacity: 0.55;
+        }
+
+        .mini-number {
+            display: inline-grid;
+            place-items: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: #fff;
+            color: #061827;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .mini-title {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: inline-block;
+            max-width: calc(100% - 40px);
+            vertical-align: middle;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .mini-thumb,
+        .slide-frame-shell {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 16 / 9;
+            background: #fff;
+        }
+
+        .mini-thumb {
+            margin-top: 8px;
+            /* border: 1px solid var(--line); */
+            border-radius: 6px;
+        }
+
+        .mini-thumb iframe,
+        .slide-frame {
+            position: absolute;
+            inset: 0 auto auto 0;
+            width: 1200px;
+            height: 675px;
+            border: 0;
+            background: #fff;
+            transform-origin: 0 0;
+        }
+
+        .mini-thumb iframe {
+            pointer-events: none;
+            transform: scale(var(--mini-scale, 0.18));
+        }
+
+        .deck-scroll {
+            height: 100%;
+            overflow: auto;
+            padding-right: 8px;
+            scroll-behavior: smooth;
+        }
+
+        .slide-card {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--panel);
+            box-shadow: 0 14px 36px rgba(11, 31, 53, 0.08);
+            overflow: hidden;
+        }
+
+        .slide-card.is-dragging {
+            opacity: 0.55;
+        }
+
+        .slide-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--line);
+            background: #fff;
+        }
+
+        .slide-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .drag-handle {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 7px 10px;
+            color: var(--muted);
+            background: #f8fafc;
+            font: inherit;
+            font-weight: 900;
+            cursor: grab;
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .slide-header h2 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .slide-frame {
+            transform: scale(var(--slide-scale, 1));
+        }
+
+        .empty {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 28px;
+            color: var(--muted);
+            background: #fff;
+            text-align: center;
+        }
+
+        @media (max-width: 760px) {
+            .topbar,
+            .slide-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .workspace {
+                grid-template-columns: 1fr;
+                height: auto;
+                min-height: 0;
+            }
+
+            .preview-rail {
+                height: 220px;
+            }
+
+            .deck-scroll {
+                height: auto;
+                overflow: visible;
+                padding-right: 0;
+            }
+
+        }
+    </style>
+</head>
+<body>
+    <main class="shell">
+        <div class="topbar">
+            <div class="brand">
+                <img src="{% static 'decks/img/image (12).png' %}" alt="Cliniqon">
+                <h1>All Slides</h1>
+            </div>
+            <div class="actions">
+                <a class="button" href="{% url 'dashboard' %}">Dashboard</a>
+                <form id="export-form" method="post" action="{% url 'export_slides_powerpoint' %}">
+                    {% csrf_token %}
+                    <div id="export-inputs"></div>
+                    <button class="button primary" type="submit">Export PowerPoint</button>
+                </form>
+                <form id="order-form" method="post" action="{% url 'save_slide_order' %}">
+                    {% csrf_token %}
+                    <div id="order-inputs"></div>
+                    <button class="button primary" type="submit">Save order</button>
+                </form>
+                <form method="post" action="{% url 'reset_removed_slides' %}">
+                    {% csrf_token %}
+                    <button class="button" type="submit">Show removed slides</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="workspace">
+            <aside class="preview-rail" aria-label="Slide order preview">
+                <h2>Slide Order</h2>
+                <div class="mini-list" id="mini-list">
+                    {% for slide in slides %}
+                        <a class="mini-slide" href="#slide-{{ slide.type }}-{{ slide.id }}" draggable="true" data-slide-key="{{ slide.type }}:{{ slide.id }}">
+                            <span class="mini-number">{{ forloop.counter }}</span>
+                            <span class="mini-title">{{ slide.title }}</span>
+                            <!-- <span class="mini-thumb" aria-hidden="true">
+                                <iframe src="{% url slide.detail_url_name slide.id %}" tabindex="-1"></iframe>
+                            </span> -->
+                        </a>
+                    {% empty %}
+                        <p class="empty">No slides yet.</p>
+                    {% endfor %}
+                </div>
+            </aside>
+
+            <div class="deck-scroll" id="deck-scroll">
+                <section class="deck" id="slide-deck">
+                    {% for slide in slides %}
+                        <article class="slide-card" id="slide-{{ slide.type }}-{{ slide.id }}" data-slide-key="{{ slide.type }}:{{ slide.id }}">
+                            <div class="slide-header">
+                                <div class="slide-title">
+                                    <button class="drag-handle" type="button" draggable="true" aria-label="Drag slide">::</button>
+                                    <h2><span class="slide-number">{{ forloop.counter }}</span>. {{ slide.title }}</h2>
+                                </div>
+                                <form method="post" action="{% url 'remove_slide_from_view' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="slide_key" value="{{ slide.type }}:{{ slide.id }}">
+                                    <button class="button remove" type="submit">Remove from this page</button>
+                                </form>
+                            </div>
+                            <div class="slide-frame-shell">
+                                <iframe class="slide-frame" src="{% url slide.detail_url_name slide.id %}" title="{{ slide.title }}" loading="lazy"></iframe>
+                            </div>
+                        </article>
+                    {% empty %}
+                        <div class="empty">
+                            No slides to show. Use the dashboard to add slides, or show removed slides.
+                        </div>
+                    {% endfor %}
+                </section>
+            </div>
+        </div>
+    </main>
+    <script>
+        const deck = document.getElementById("slide-deck");
+        const miniList = document.getElementById("mini-list");
+        const orderForm = document.getElementById("order-form");
+        const orderInputs = document.getElementById("order-inputs");
+        const exportForm = document.getElementById("export-form");
+        const exportInputs = document.getElementById("export-inputs");
+        const slideWidth = 1200;
+        let activeDragCard = null;
+        let activeMiniSlide = null;
+
+        function getCards() {
+            return Array.from(deck.querySelectorAll(".slide-card"));
+        }
+
+        function updateNumbers() {
+            getCards().forEach((card, index) => {
+                const number = card.querySelector(".slide-number");
+                if (number) {
+                    number.textContent = index + 1;
+                }
+            });
+            syncMiniList();
+        }
+
+        function syncMiniList() {
+            getCards().forEach((card, index) => {
+                const mini = miniList.querySelector(`[data-slide-key="${card.dataset.slideKey}"]`);
+                if (!mini) {
+                    return;
+                }
+
+                const number = mini.querySelector(".mini-number");
+                if (number) {
+                    number.textContent = index + 1;
+                }
+                miniList.appendChild(mini);
+            });
+        }
+
+        function cardAfterPointer(y) {
+            const cards = getCards().filter((card) => !card.classList.contains("is-dragging"));
+            return cards.reduce((closest, card) => {
+                const box = card.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset, card };
+                }
+                return closest;
+            }, { offset: Number.NEGATIVE_INFINITY, card: null }).card;
+        }
+
+        function miniAfterPointer(y) {
+            const minis = Array.from(miniList.querySelectorAll(".mini-slide")).filter((mini) => !mini.classList.contains("is-dragging"));
+            return minis.reduce((closest, mini) => {
+                const box = mini.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset, mini };
+                }
+                return closest;
+            }, { offset: Number.NEGATIVE_INFINITY, mini: null }).mini;
+        }
+
+        function syncDeckFromMiniList() {
+            Array.from(miniList.querySelectorAll(".mini-slide")).forEach((mini) => {
+                const card = deck.querySelector(`[data-slide-key="${mini.dataset.slideKey}"]`);
+                if (card) {
+                    deck.appendChild(card);
+                }
+            });
+            updateNumbers();
+        }
+
+        function updatePreviewScales() {
+            document.querySelectorAll(".slide-frame-shell").forEach((shell) => {
+                shell.style.setProperty("--slide-scale", shell.clientWidth / slideWidth);
+            });
+
+            document.querySelectorAll(".mini-thumb").forEach((thumb) => {
+                thumb.style.setProperty("--mini-scale", thumb.clientWidth / slideWidth);
+            });
+        }
+
+        deck.addEventListener("dragstart", (event) => {
+            const handle = event.target.closest(".drag-handle");
+            if (!handle) {
+                event.preventDefault();
+                return;
+            }
+
+            const card = handle.closest(".slide-card");
+            activeDragCard = card;
+            card.classList.add("is-dragging");
+            event.dataTransfer.effectAllowed = "move";
+            event.dataTransfer.setData("application/x-slide-key", card.dataset.slideKey);
+            event.dataTransfer.setData("text/plain", "slide");
+        });
+
+        deck.addEventListener("dragend", (event) => {
+            const card = activeDragCard || event.target.closest(".slide-card");
+            if (card) {
+                card.classList.remove("is-dragging");
+            }
+            activeDragCard = null;
+            updateNumbers();
+        });
+
+        deck.addEventListener("dragover", (event) => {
+            event.preventDefault();
+            const dragging = deck.querySelector(".is-dragging");
+            if (!dragging) {
+                return;
+            }
+
+            const nextCard = cardAfterPointer(event.clientY);
+            if (nextCard) {
+                deck.insertBefore(dragging, nextCard);
+            } else {
+                deck.appendChild(dragging);
+            }
+        });
+
+        miniList.addEventListener("click", (event) => {
+            if (activeMiniSlide) {
+                event.preventDefault();
+            }
+        });
+
+        miniList.addEventListener("dragstart", (event) => {
+            const mini = event.target.closest(".mini-slide");
+            if (!mini) {
+                return;
+            }
+
+            activeMiniSlide = mini;
+            mini.classList.add("is-dragging");
+            event.dataTransfer.effectAllowed = "move";
+            event.dataTransfer.setData("application/x-slide-key", mini.dataset.slideKey);
+            event.dataTransfer.setData("text/plain", "slide");
+        });
+
+        miniList.addEventListener("dragend", () => {
+            if (activeMiniSlide) {
+                activeMiniSlide.classList.remove("is-dragging");
+            }
+            activeMiniSlide = null;
+            syncDeckFromMiniList();
+        });
+
+        miniList.addEventListener("dragover", (event) => {
+            event.preventDefault();
+            const dragging = miniList.querySelector(".is-dragging");
+            if (!dragging) {
+                return;
+            }
+
+            const nextMini = miniAfterPointer(event.clientY);
+            if (nextMini) {
+                miniList.insertBefore(dragging, nextMini);
+            } else {
+                miniList.appendChild(dragging);
+            }
+            syncDeckFromMiniList();
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                const mini = miniList.querySelector(`[data-slide-key="${entry.target.dataset.slideKey}"]`);
+                if (mini) {
+                    mini.classList.toggle("is-active", entry.isIntersecting);
+                }
+            });
+        }, { rootMargin: "-35% 0px -55% 0px", threshold: 0.01 });
+
+        getCards().forEach((card) => observer.observe(card));
+        updatePreviewScales();
+        window.addEventListener("resize", updatePreviewScales);
+
+        document.addEventListener("dragover", (event) => {
+            if (activeDragCard || activeMiniSlide) {
+                event.preventDefault();
+            }
+        });
+
+        document.addEventListener("drop", (event) => {
+            if (activeDragCard || activeMiniSlide) {
+                event.preventDefault();
+            }
+        });
+
+        function fillOrderInputs(container) {
+            container.replaceChildren();
+            getCards().forEach((card) => {
+                const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = "slide_key";
+                input.value = card.dataset.slideKey;
+                container.appendChild(input);
+            });
+        }
+
+        orderForm.addEventListener("submit", () => {
+            fillOrderInputs(orderInputs);
+        });
+
+        exportForm.addEventListener("submit", () => {
+            fillOrderInputs(exportInputs);
+        });
+    </script>
+</body>
+</html>

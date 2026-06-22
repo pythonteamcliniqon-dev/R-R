@@ -4,6 +4,7 @@ from .models import (
     AgencyName,
     AgencyPage,
     BulletPage,
+    CareerOpportunityPage,
     CaptionSlidePage,
     ClientDatePage,
     ClientSaysPage,
@@ -149,3 +150,12 @@ class KudosBulletMomentPageForm(forms.ModelForm):
     class Meta:
         model = KudosBulletMomentPage
         fields = ["title", "display_type", "image", "name", "designation"]
+
+
+class CareerOpportunityPageForm(forms.ModelForm):
+    class Meta:
+        model = CareerOpportunityPage
+        fields = ["title", "content"]
+        widgets = {
+            "content": forms.Textarea(attrs={"rows": 5}),
+        }

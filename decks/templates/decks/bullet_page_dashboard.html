@@ -186,29 +186,7 @@
 </head>
 <body>
     <main class="shell">
-        <div class="topbar">
-            <div class="dashboard-brand">
-                <img src="{% static 'decks/img/cliniqon-mark.svg' %}" alt="Cliniqon">
-                <h1>Bullet Page Dashboard</h1>
-            </div>
-            <a class="view-link" href="{% url 'bullet_page_view' %}">View frontend</a>
-        </div>
-
-        <nav class="menu" aria-label="Dashboard menu">
-            <a class="{% if active_menu == 'first' %}active{% endif %}" href="{% url 'dashboard' %}">First Page</a>
-            <a class="{% if active_menu == 'next' %}active{% endif %}" href="{% url 'next_page_dashboard' %}">Next Page</a>
-            <a class="{% if active_menu == 'agency' %}active{% endif %}" href="{% url 'agency_page_dashboard' %}">Agency Page</a>
-            <a class="{% if active_menu == 'bullet' %}active{% endif %}" href="{% url 'bullet_page_dashboard' %}">Bullet Page</a>
-            <a class="{% if active_menu == 'client_date' %}active{% endif %}" href="{% url 'client_date_page_dashboard' %}">Client Date Page</a>
-            <a class="{% if active_menu == 'client_says' %}active{% endif %}" href="{% url 'client_says_page_dashboard' %}">Client Says Page</a>
-            <a class="{% if active_menu == 'gallery' %}active{% endif %}" href="{% url 'gallery_page_dashboard' %}">Gallery Page</a>
-            <a class="{% if active_menu == 'caption_slide' %}active{% endif %}" href="{% url 'caption_slide_page_dashboard' %}">Wishes</a>
-            <a class="{% if active_menu == 'new_joiners' %}active{% endif %}" href="{% url 'new_joiners_dashboard' %}">New Joiners</a>
-            <a class="{% if active_menu == 'promotions' %}active{% endif %}" href="{% url 'promotions_dashboard' %}">Promotions</a>
-            <a class="{% if active_menu == 'kudos_moments' %}active{% endif %}" href="{% url 'kudos_moments_dashboard' %}">Kudos Moments</a>
-            <a class="{% if active_menu == 'special_appreciation' %}active{% endif %}" href="{% url 'special_appreciation_dashboard' %}">Special Appreciation</a>
-            <a class="{% if active_menu == 'kudos_bullet_moments' %}active{% endif %}" href="{% url 'kudos_bullet_moments_dashboard' %}">Kudos Bullets</a>
-        </nav>
+        {% include "decks/includes/dashboard_menu.html" with dashboard_title="Bullet Page Dashboard" %}
 
         <div class="layout">
             <section class="panel">
@@ -256,11 +234,26 @@
                     <article class="preview-item">
                         <h3>{{ bullet_page.title }}</h3>
                         <p>{{ bullet_page.description }}</p>
+                        <p><a class="view-link" href="{% url 'bullet_page_view_detail' bullet_page.id %}">Preview</a></p>
+                        <form method="post" action="{% url 'delete_page_item' 'bullet' bullet_page.id %}" onsubmit="return confirm('Delete this saved slide?');">
+                            {% csrf_token %}
+                            <button class="view-link" type="submit">Delete</button>
+                        </form>
                         {% for card in bullet_page.cards.all %}
                             <h4>{{ card.title }}</h4>
+                            <form method="post" action="{% url 'delete_child_item' 'bullet-card' card.id %}" onsubmit="return confirm('Delete this card and its bullets?');">
+                                {% csrf_token %}
+                                <button class="view-link" type="submit">Delete card</button>
+                            </form>
                             <ul>
                                 {% for item in card.items.all %}
-                                    <li>{{ item.text }}</li>
+                                    <li>
+                                        {{ item.text }}
+                                        <form method="post" action="{% url 'delete_child_item' 'bullet-item' item.id %}" style="display:inline;" onsubmit="return confirm('Delete this bullet?');">
+                                            {% csrf_token %}
+                                            <button class="view-link" type="submit">Delete item</button>
+                                        </form>
+                                    </li>
                                 {% endfor %}
                             </ul>
                         {% endfor %}

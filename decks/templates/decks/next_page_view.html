@@ -21,9 +21,31 @@
         }
 
         .page {
-            width: min(1200px, calc(100% - 32px));
-            margin: 24px auto;
+            position: relative;
+            width: var(--slide-width, 1920px);
+            height: var(--slide-height, 1080px);
+            margin: 24px auto 72px;
         }
+
+        .page > section {
+            width: 1200px;
+            min-height: 675px;
+            height: 675px;
+            transform: scale(var(--section-scale, 1.6));
+            transform-origin: top left;
+        }
+
+        .page > .dashboard-link {
+            position: absolute;
+            top: calc(100% + 18px);
+            left: 0;
+        }
+        @media (max-width: 1952px) { .page { --slide-width: 1728px; --slide-height: 972px; --section-scale: 1.44; } }
+        @media (max-width: 1760px) { .page { --slide-width: 1536px; --slide-height: 864px; --section-scale: 1.28; } }
+        @media (max-width: 1568px) { .page { --slide-width: 1344px; --slide-height: 756px; --section-scale: 1.12; } }
+        @media (max-width: 1376px) { .page { --slide-width: 1190px; --slide-height: 670px; --section-scale: .992; } }
+        @media (max-width: 1216px) { .page { --slide-width: 998px; --slide-height: 562px; --section-scale: .832; } }
+        @media (max-width: 1008px) { .page { --slide-width: 845px; --slide-height: 475px; --section-scale: .704; } }
 
         .metrics-slide {
             position: relative;
@@ -322,8 +344,6 @@
                 <img class="graph" src="{% static 'decks/img/image-6.png' %}" alt="">
             </div>
         </section>
-
-        <a class="dashboard-link" href="{% url 'next_page_dashboard' %}">Open dashboard</a>
     </main>
 </body>
 </html>

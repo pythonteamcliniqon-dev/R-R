@@ -31,7 +31,7 @@
         a { color: inherit; }
 
         .shell {
-            width: min(1180px, calc(100% - 32px));
+            width: min(1280px, calc(100% - 32px));
             margin: 0 auto;
             padding: 32px 0;
         }
@@ -87,7 +87,7 @@
 
         .layout {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: minmax(0, 1.15fr) minmax(360px, .85fr);
             gap: 24px;
             align-items: start;
         }
@@ -96,8 +96,15 @@
             border: 1px solid var(--line);
             border-radius: 8px;
             background: var(--panel);
-            padding: 22px;
+            padding: 24px;
             box-shadow: 0 14px 36px rgba(11, 31, 53, 0.08);
+        }
+
+        .panel:nth-child(2) {
+            position: sticky;
+            top: 18px;
+            max-height: calc(100vh - 36px);
+            overflow: auto;
         }
 
         .form-title,
@@ -132,8 +139,9 @@
         .joiner-row {
             border: 1px solid var(--line);
             border-radius: 8px;
-            padding: 14px;
+            padding: 16px;
             background: #fbfdff;
+            box-shadow: 0 8px 18px rgba(11, 31, 53, 0.04);
         }
 
         .joiner-grid {
@@ -146,35 +154,68 @@
             width: 100%;
             border: 0;
             border-radius: 8px;
-            padding: 12px 14px;
+            padding: 14px 16px;
             color: #061827;
             background: var(--accent);
             font-weight: 800;
             cursor: pointer;
+            box-shadow: 0 10px 18px rgba(17, 199, 223, 0.24);
         }
 
         .preview-item {
             border: 1px solid var(--line);
             border-radius: 8px;
-            padding: 14px;
+            padding: 16px;
             background: #fff;
+            margin-bottom: 16px;
+            box-shadow: 0 10px 24px rgba(11, 31, 53, 0.06);
+        }
+
+        .preview-list {
+            max-height: calc(100vh - 170px);
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+
+        .preview-item h3 {
+            margin: 0 0 4px;
+            font-size: 18px;
+        }
+
+        .preview-item > p {
+            margin: 0 0 12px;
+            color: var(--muted);
+        }
+
+        .preview-item > form,
+        .preview-item > p:has(.view-link) {
+            display: inline-block;
+            margin: 0 8px 14px 0;
         }
 
         .preview-grid {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+            gap: 14px;
+            padding-top: 12px;
+            border-top: 1px solid var(--line);
         }
 
         .preview-person {
-            width: 130px;
+            min-width: 0;
+            border: 1px solid #e8eef5;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            background: #f8fafc;
         }
 
         .preview-person img {
-            width: 92px;
-            height: 92px;
+            width: 76px;
+            height: 76px;
             border-radius: 999px;
             object-fit: cover;
+            box-shadow: 0 4px 12px rgba(11, 31, 53, 0.14);
         }
 
         .preview-person strong,
@@ -186,7 +227,31 @@
 
         .preview-person span { color: var(--muted); }
 
+        .preview-person form {
+            margin-top: 8px;
+        }
+
+        .preview-person .view-link,
+        .preview-item form .view-link {
+            padding: 7px 10px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
         @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .panel:nth-child(2) {
+                position: static;
+                max-height: none;
+            }
+
+            .preview-list {
+                max-height: 70vh;
+            }
+
             .joiner-grid {
                 grid-template-columns: 1fr;
             }
@@ -195,29 +260,7 @@
 </head>
 <body>
     <main class="shell">
-        <div class="topbar">
-            <div class="dashboard-brand">
-                <img src="{% static 'decks/img/cliniqon-mark.svg' %}" alt="Cliniqon">
-                <h1>New Joiners Dashboard</h1>
-            </div>
-            <a class="view-link" href="{% url 'new_joiners_view' %}">View frontend</a>
-        </div>
-
-        <nav class="menu" aria-label="Dashboard menu">
-            <a class="{% if active_menu == 'first' %}active{% endif %}" href="{% url 'dashboard' %}">First Page</a>
-            <a class="{% if active_menu == 'next' %}active{% endif %}" href="{% url 'next_page_dashboard' %}">Next Page</a>
-            <a class="{% if active_menu == 'agency' %}active{% endif %}" href="{% url 'agency_page_dashboard' %}">Agency Page</a>
-            <a class="{% if active_menu == 'bullet' %}active{% endif %}" href="{% url 'bullet_page_dashboard' %}">Bullet Page</a>
-            <a class="{% if active_menu == 'client_date' %}active{% endif %}" href="{% url 'client_date_page_dashboard' %}">Client Date Page</a>
-            <a class="{% if active_menu == 'client_says' %}active{% endif %}" href="{% url 'client_says_page_dashboard' %}">Client Says Page</a>
-            <a class="{% if active_menu == 'gallery' %}active{% endif %}" href="{% url 'gallery_page_dashboard' %}">Gallery Page</a>
-            <a class="{% if active_menu == 'caption_slide' %}active{% endif %}" href="{% url 'caption_slide_page_dashboard' %}">Wishes</a>
-            <a class="{% if active_menu == 'new_joiners' %}active{% endif %}" href="{% url 'new_joiners_dashboard' %}">New Joiners</a>
-            <a class="{% if active_menu == 'promotions' %}active{% endif %}" href="{% url 'promotions_dashboard' %}">Promotions</a>
-            <a class="{% if active_menu == 'kudos_moments' %}active{% endif %}" href="{% url 'kudos_moments_dashboard' %}">Kudos Moments</a>
-            <a class="{% if active_menu == 'special_appreciation' %}active{% endif %}" href="{% url 'special_appreciation_dashboard' %}">Special Appreciation</a>
-            <a class="{% if active_menu == 'kudos_bullet_moments' %}active{% endif %}" href="{% url 'kudos_bullet_moments_dashboard' %}">Kudos Bullets</a>
-        </nav>
+        {% include "decks/includes/dashboard_menu.html" with dashboard_title="New Joiners Dashboard" %}
 
         <div class="layout">
             <section class="panel">
@@ -262,16 +305,26 @@
 
             <section class="panel">
                 <h2 class="preview-title">Added new joiners</h2>
+                <div class="preview-list">
                 {% for page in new_joiners_pages %}
                     <article class="preview-item">
                         <h3>{{ page.title }}</h3>
                         <p>{{ page.caption }}</p>
+                        <p><a class="view-link" href="{% url 'new_joiners_view_detail' page.id %}">Preview</a></p>
+                        <form method="post" action="{% url 'delete_page_item' 'new-joiners' page.id %}" onsubmit="return confirm('Delete this saved slide?');">
+                            {% csrf_token %}
+                            <button class="view-link" type="submit">Delete</button>
+                        </form>
                         <div class="preview-grid">
                             {% for joiner in page.joiners.all %}
                                 <div class="preview-person">
                                     <img src="{{ joiner.image.url }}" alt="{{ joiner.name }}">
                                     <strong>{{ joiner.name }}</strong>
                                     <span>{{ joiner.designation }}</span>
+                                    <form method="post" action="{% url 'delete_child_item' 'new-joiner' joiner.id %}" onsubmit="return confirm('Delete this joiner?');">
+                                        {% csrf_token %}
+                                        <button class="view-link" type="submit">Delete item</button>
+                                    </form>
                                 </div>
                             {% endfor %}
                         </div>
@@ -279,6 +332,7 @@
                 {% empty %}
                     <p>No new joiners added yet.</p>
                 {% endfor %}
+                </div>
             </section>
         </div>
     </main>

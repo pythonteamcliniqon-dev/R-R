@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Opportunities Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --ink:#0b1f35; --muted:#64748b; --line:#d8e1ea; --accent:#11c7df; --panel:#fff; --wash:#f2f7f9; }
+        * { box-sizing:border-box; }
+        body { margin:0; min-height:100vh; color:var(--ink); background:var(--wash); font-family:"Poppins", Arial, Helvetica, sans-serif; }
+        a { color:inherit; }
+        .shell { width:min(1180px, calc(100% - 32px)); margin:0 auto; padding:32px 0; }
+        .topbar,.dashboard-brand,.menu { display:flex; align-items:center; }
+        .topbar { justify-content:space-between; gap:16px; margin-bottom:24px; }
+        .dashboard-brand { gap:12px; }
+        .dashboard-brand img { width:42px; height:42px; }
+        h1 { margin:0; font-size:28px; }
+        .view-link,.menu a { border:1px solid var(--line); border-radius:8px; padding:10px 14px; text-decoration:none; background:#fff; font-weight:800; }
+        .menu { flex-wrap:wrap; gap:10px; margin-bottom:24px; }
+        .menu a { color:var(--muted); }
+        .menu a.active { border-color:var(--accent); color:#061827; background:#dffafe; }
+        .layout { display:grid; grid-template-columns:470px 1fr; gap:24px; align-items:start; }
+        .panel { border:1px solid var(--line); border-radius:8px; background:var(--panel); padding:22px; box-shadow:0 14px 36px rgba(11,31,53,.08); }
+        .form-title,.preview-title { margin:0 0 18px; font-size:20px; }
+        .field,.job-row { margin-bottom:16px; }
+        label { display:block; margin-bottom:7px; color:#243b53; font-size:14px; font-weight:700; }
+        input,textarea { width:100%; border:1px solid var(--line); border-radius:8px; padding:11px 12px; color:var(--ink); background:#fff; font:inherit; }
+        textarea { resize:vertical; }
+        .job-row { border:1px solid var(--line); border-radius:8px; padding:14px; background:#fbfdff; }
+        .job-grid { display:grid; grid-template-columns:1fr 90px; gap:10px; }
+        .section-heading { margin:24px 0 12px; color:var(--muted); font-size:14px; text-transform:uppercase; }
+        .submit { width:100%; border:0; border-radius:8px; padding:12px 14px; color:#061827; background:var(--accent); font-weight:800; cursor:pointer; }
+        .preview-list { display:grid; gap:12px; }
+        .preview-item { border:1px solid var(--line); border-radius:8px; padding:14px; background:#fff; }
+        .preview-item h3 { margin:0 0 8px; }
+        .preview-item p,.preview-item li { color:var(--muted); }
+        @media (max-width:900px) { .layout,.job-grid { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+    <main class="shell">
+        {% include "decks/includes/dashboard_menu.html" with dashboard_title="Career Opportunities Dashboard" %}
+
+        <div class="layout">
+            <section class="panel">
+                <h2 class="form-title">Add career opportunities</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="field">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {{ field.errors }}
+                        </div>
+                    {% endfor %}
+
+                    <h3 class="section-heading">Job cards (max 10)</h3>
+                    {% for job in career_job_rows %}
+                        <div class="job-row">
+                            <input type="hidden" name="career_job_id" value="{% if job %}{{ job.id }}{% endif %}">
+                            <div class="job-grid">
+                                <div>
+                                    <label>Job title:</label>
+                                    <input type="text" name="career_job_title" value="{% if job %}{{ job.title }}{% endif %}" placeholder="Corporate Finance Manager">
+                                </div>
+                                <div>
+                                    <label>Order:</label>
+                                    <input type="number" name="career_job_order" min="1" max="10" value="{% if job %}{{ job.order }}{% else %}{{ forloop.counter }}{% endif %}">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>Content:</label>
+                                <textarea name="career_job_content" rows="3" placeholder="Optional details for this role">{% if job %}{{ job.content }}{% endif %}</textarea>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    <button class="submit" type="submit">Save career opportunities</button>
+                </form>
+            </section>
+
+            <section class="panel">
+                <h2 class="preview-title">Added career pages</h2>
+                <div class="preview-list">
+                    {% for page in career_pages %}
+                        <article class="preview-item">
+                            <h3>{{ page.title }}</h3>
+                            <p>{{ page.content }}</p>
+                            <p><a class="view-link" href="{% url 'career_opportunities_view_detail' page.id %}">Preview</a></p>
+                            <form method="post" action="{% url 'delete_page_item' 'career-opportunities' page.id %}" onsubmit="return confirm('Delete this saved slide?');">
+                                {% csrf_token %}
+                                <button class="view-link" type="submit">Delete</button>
+                            </form>
+                            <ol>
+                                {% for job in page.jobs.all %}
+                                    <li>
+                                        {{ job.title }}
+                                        <form method="post" action="{% url 'delete_child_item' 'career-opportunity-job' job.id %}" style="display:inline;" onsubmit="return confirm('Delete this job?');">
+                                            {% csrf_token %}
+                                            <button class="view-link" type="submit">Delete item</button>
+                                        </form>
+                                    </li>
+                                {% endfor %}
+                            </ol>
+                        </article>
+                    {% empty %}
+                        <p>No career opportunities added yet.</p>
+                    {% endfor %}
+                </div>
+            </section>
+        </div>
+    </main>
+</body>
+</html>

@@ -19,9 +19,31 @@
         }
 
         .page {
-            width: min(1200px, calc(100% - 32px));
-            margin: 24px auto;
+            position: relative;
+            width: var(--slide-width, 1920px);
+            height: var(--slide-height, 1080px);
+            margin: 24px auto 72px;
         }
+
+        .page > section {
+            width: 1200px;
+            min-height: 675px;
+            height: 675px;
+            transform: scale(var(--section-scale, 1.6));
+            transform-origin: top left;
+        }
+
+        .page > .dashboard-link {
+            position: absolute;
+            top: calc(100% + 18px);
+            left: 0;
+        }
+        @media (max-width: 1952px) { .page { --slide-width: 1728px; --slide-height: 972px; --section-scale: 1.44; } }
+        @media (max-width: 1760px) { .page { --slide-width: 1536px; --slide-height: 864px; --section-scale: 1.28; } }
+        @media (max-width: 1568px) { .page { --slide-width: 1344px; --slide-height: 756px; --section-scale: 1.12; } }
+        @media (max-width: 1376px) { .page { --slide-width: 1190px; --slide-height: 670px; --section-scale: .992; } }
+        @media (max-width: 1216px) { .page { --slide-width: 998px; --slide-height: 562px; --section-scale: .832; } }
+        @media (max-width: 1008px) { .page { --slide-width: 845px; --slide-height: 475px; --section-scale: .704; } }
 
         .new-joiners {
             min-height: 675px;
@@ -30,10 +52,12 @@
             background: url("{% static 'decks/img/image(1).png' %}") center / cover no-repeat;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.24);
             padding: 30px 36px 32px;
+            display: flex;
+            flex-direction: column;
         }
 
         .slide-heading {
-            margin: 0 0 12px;
+            margin: 0 0 18px;
             text-align: center;
         }
 
@@ -58,13 +82,14 @@
         .people-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px 16px;
+            gap: 34px 16px;
             align-items: flex-start;
+            align-content: center;
             justify-content: center;
+            height: 100%;
         }
 
         .people-grid.is-five {
-            min-height: 470px;
             align-content: center;
             align-items: center;
         }
@@ -85,36 +110,47 @@
             position: relative;
             width: min(190px, 100%);
             aspect-ratio: 1;
-            margin: 0 auto -8px;
-            border-radius: 999px;
-            overflow: hidden;
-            background:
-                radial-gradient(circle at 50% 6%, rgba(255, 255, 255, 0.58) 0 18%, rgba(255, 255, 255, 0.18) 38%, transparent 66%),
-                linear-gradient(180deg, rgba(217, 233, 237, 0.86) 0%, rgba(126, 155, 168, 0.94) 100%);
-            box-shadow: inset 0 12px 26px rgba(255, 255, 255, 0.18);
+            margin: 0 auto -24px;
+            overflow: visible;
         }
 
+        .portrait-wrap::before,
         .portrait-wrap::after {
             position: absolute;
             inset: 0;
-            border-radius: inherit;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.20), transparent 34%);
             content: "";
             pointer-events: none;
         }
 
+        .portrait-wrap::before {
+            border-radius: 50%;
+            background: url("{% static 'decks/img/Ellipse 1019 (2).png' %}") center / contain no-repeat;
+            box-shadow: inset 0 12px 26px rgba(255, 255, 255, 0.18);
+        }
+
+        .portrait-wrap::after {
+            border-radius: 50%;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.20), transparent 34%);
+        }
+
         .portrait-wrap img {
-            position: relative;
+            position: absolute;
             z-index: 1;
+            left: 50%;
+            bottom: 0;
             width: 100%;
-            height: 100%;
+            height: 112%;
             object-fit: contain;
             object-position: center bottom;
             display: block;
+            transform: translateX(-50%);
         }
 
         .person-info {
+            position: relative;
+            z-index: 3;
             min-height: 68px;
+            margin: 0 auto;
             border-radius: 6px;
             padding: 9px 10px;
             color: #0b2b67;
@@ -207,8 +243,6 @@
                 {% endwith %}
             {% endif %}
         </section>
-
-        <a class="dashboard-link" href="{% url 'new_joiners_dashboard' %}">Open dashboard</a>
     </main>
 </body>
 </html>

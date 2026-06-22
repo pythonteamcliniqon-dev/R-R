@@ -1,0 +1,90 @@
+{% load static %}
+<style>
+    .dashboard-brand .brand-logo {
+        width: 96px !important;
+        height: auto !important;
+        object-fit: contain;
+    }
+
+    .menu.dashboard-menu {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(156px, 1fr));
+        gap: 10px;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .menu.dashboard-menu a {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 10px 12px;
+        white-space: normal;
+        line-height: 1.15;
+    }
+
+    .menu.dashboard-menu .menu-icon {
+        flex: 0 0 26px;
+        width: 26px;
+        height: 26px;
+        display: grid;
+        place-items: center;
+        border-radius: 7px;
+        color: #075985;
+        background: #e0f7fb;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 0;
+    }
+
+    .menu.dashboard-menu a.active .menu-icon {
+        color: #061827;
+        background: #11c7df;
+    }
+
+    .menu.dashboard-menu .menu-label {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 720px) {
+        .menu.dashboard-menu {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .menu.dashboard-menu a {
+            font-size: 13px;
+        }
+    }
+
+    @media (max-width: 420px) {
+        .menu.dashboard-menu {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+<div class="topbar">
+    <div class="dashboard-brand">
+        <img class="brand-logo" src="{% static 'decks/img/image (12).png' %}" alt="Cliniqon">
+        <h1>{{ dashboard_title }}</h1>
+    </div>
+    <a class="view-link" href="{% url 'all_slides' %}">All slides</a>
+</div>
+
+<nav class="menu dashboard-menu" aria-label="Dashboard menu">
+    <a class="{% if active_menu == 'first' %}active{% endif %}" href="{% url 'dashboard' %}"><span class="menu-icon">FP</span><span class="menu-label">First Page</span></a>
+    <a class="{% if active_menu == 'next' %}active{% endif %}" href="{% url 'next_page_dashboard' %}"><span class="menu-icon">NP</span><span class="menu-label">Next Page</span></a>
+    <a class="{% if active_menu == 'agency' %}active{% endif %}" href="{% url 'agency_page_dashboard' %}"><span class="menu-icon">AG</span><span class="menu-label">Agency Page</span></a>
+    <a class="{% if active_menu == 'bullet' %}active{% endif %}" href="{% url 'bullet_page_dashboard' %}"><span class="menu-icon">BL</span><span class="menu-label">Bullet Page</span></a>
+    <a class="{% if active_menu == 'client_date' %}active{% endif %}" href="{% url 'client_date_page_dashboard' %}"><span class="menu-icon">CD</span><span class="menu-label">Client Date Page</span></a>
+    <a class="{% if active_menu == 'client_says' %}active{% endif %}" href="{% url 'client_says_page_dashboard' %}"><span class="menu-icon">CS</span><span class="menu-label">Client Says Page</span></a>
+    <a class="{% if active_menu == 'gallery' %}active{% endif %}" href="{% url 'gallery_page_dashboard' %}"><span class="menu-icon">GL</span><span class="menu-label">Gallery Page</span></a>
+    <a class="{% if active_menu == 'caption_slide' %}active{% endif %}" href="{% url 'caption_slide_page_dashboard' %}"><span class="menu-icon">WS</span><span class="menu-label">Wishes</span></a>
+    <a class="{% if active_menu == 'new_joiners' %}active{% endif %}" href="{% url 'new_joiners_dashboard' %}"><span class="menu-icon">NJ</span><span class="menu-label">New Joiners</span></a>
+    <a class="{% if active_menu == 'promotions' %}active{% endif %}" href="{% url 'promotions_dashboard' %}"><span class="menu-icon">PR</span><span class="menu-label">Promotions</span></a>
+    <a class="{% if active_menu == 'kudos_moments' %}active{% endif %}" href="{% url 'kudos_moments_dashboard' %}"><span class="menu-icon">KM</span><span class="menu-label">Kudos Moments</span></a>
+    <a class="{% if active_menu == 'special_appreciation' %}active{% endif %}" href="{% url 'special_appreciation_dashboard' %}"><span class="menu-icon">SA</span><span class="menu-label">Special Appreciation</span></a>
+    <a class="{% if active_menu == 'kudos_bullet_moments' %}active{% endif %}" href="{% url 'kudos_bullet_moments_dashboard' %}"><span class="menu-icon">KB</span><span class="menu-label">Kudos Bullets</span></a>
+    <a class="{% if active_menu == 'career_opportunities' %}active{% endif %}" href="{% url 'career_opportunities_dashboard' %}"><span class="menu-icon">CO</span><span class="menu-label">Career Opportunities</span></a>
+</nav>

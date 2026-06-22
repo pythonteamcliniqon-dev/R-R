@@ -43,28 +43,7 @@
 </head>
 <body>
     <main class="shell">
-        <div class="topbar">
-            <div class="dashboard-brand">
-                <img src="{% static 'decks/img/cliniqon-mark.svg' %}" alt="Cliniqon">
-                <h1>Kudos Moments Dashboard</h1>
-            </div>
-            <a class="view-link" href="{% url 'kudos_moments_view' %}">View frontend</a>
-        </div>
-        <nav class="menu" aria-label="Dashboard menu">
-            <a class="{% if active_menu == 'first' %}active{% endif %}" href="{% url 'dashboard' %}">First Page</a>
-            <a class="{% if active_menu == 'next' %}active{% endif %}" href="{% url 'next_page_dashboard' %}">Next Page</a>
-            <a class="{% if active_menu == 'agency' %}active{% endif %}" href="{% url 'agency_page_dashboard' %}">Agency Page</a>
-            <a class="{% if active_menu == 'bullet' %}active{% endif %}" href="{% url 'bullet_page_dashboard' %}">Bullet Page</a>
-            <a class="{% if active_menu == 'client_date' %}active{% endif %}" href="{% url 'client_date_page_dashboard' %}">Client Date Page</a>
-            <a class="{% if active_menu == 'client_says' %}active{% endif %}" href="{% url 'client_says_page_dashboard' %}">Client Says Page</a>
-            <a class="{% if active_menu == 'gallery' %}active{% endif %}" href="{% url 'gallery_page_dashboard' %}">Gallery Page</a>
-            <a class="{% if active_menu == 'caption_slide' %}active{% endif %}" href="{% url 'caption_slide_page_dashboard' %}">Wishes</a>
-            <a class="{% if active_menu == 'new_joiners' %}active{% endif %}" href="{% url 'new_joiners_dashboard' %}">New Joiners</a>
-            <a class="{% if active_menu == 'promotions' %}active{% endif %}" href="{% url 'promotions_dashboard' %}">Promotions</a>
-            <a class="{% if active_menu == 'kudos_moments' %}active{% endif %}" href="{% url 'kudos_moments_dashboard' %}">Kudos Moments</a>
-            <a class="{% if active_menu == 'special_appreciation' %}active{% endif %}" href="{% url 'special_appreciation_dashboard' %}">Special Appreciation</a>
-            <a class="{% if active_menu == 'kudos_bullet_moments' %}active{% endif %}" href="{% url 'kudos_bullet_moments_dashboard' %}">Kudos Bullets</a>
-        </nav>
+        {% include "decks/includes/dashboard_menu.html" with dashboard_title="Kudos Moments Dashboard" %}
         <div class="layout">
             <section class="panel">
                 <h2 class="form-title">Add kudos moments</h2>
@@ -92,9 +71,21 @@
                     <article class="preview-item">
                         <h3>{{ page.title }}</h3>
                         <p>{{ page.get_display_type_display }}{% if page.name %} · {{ page.name }}{% endif %}</p>
+                        <p><a class="view-link" href="{% url 'kudos_moments_view_detail' page.id %}">Preview</a></p>
+                        <form method="post" action="{% url 'delete_page_item' 'kudos-moments' page.id %}" onsubmit="return confirm('Delete this saved slide?');">
+                            {% csrf_token %}
+                            <button class="view-link" type="submit">Delete</button>
+                        </form>
                         <div class="preview-grid">
                             {% for card in page.cards.all %}
-                                <div class="preview-card"><strong>{{ card.value }}</strong><span>{{ card.label }}</span></div>
+                                <div class="preview-card">
+                                    <strong>{{ card.value }}</strong>
+                                    <span>{{ card.label }}</span>
+                                    <form method="post" action="{% url 'delete_child_item' 'kudos-moment-card' card.id %}" onsubmit="return confirm('Delete this kudos card?');">
+                                        {% csrf_token %}
+                                        <button class="view-link" type="submit">Delete item</button>
+                                    </form>
+                                </div>
                             {% endfor %}
                         </div>
                     </article>

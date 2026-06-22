@@ -11,7 +11,32 @@
     <style>
         * { box-sizing:border-box; }
         body { margin:0; min-height:100vh; background:#eef2f4; font-family:"Poppins", Arial, sans-serif; }
-        .page { width:min(1200px, calc(100% - 32px)); margin:24px auto; }
+        .page {
+            position: relative;
+            width: var(--slide-width, 1920px);
+            height: var(--slide-height, 1080px);
+            margin: 24px auto 72px;
+        }
+
+        .page > section {
+            width: 1200px;
+            min-height: 675px;
+            height: 675px;
+            transform: scale(var(--section-scale, 1.6));
+            transform-origin: top left;
+        }
+
+        .page > .dashboard-link {
+            position: absolute;
+            top: calc(100% + 18px);
+            left: 0;
+        }
+        @media (max-width: 1952px) { .page { --slide-width: 1728px; --slide-height: 972px; --section-scale: 1.44; } }
+        @media (max-width: 1760px) { .page { --slide-width: 1536px; --slide-height: 864px; --section-scale: 1.28; } }
+        @media (max-width: 1568px) { .page { --slide-width: 1344px; --slide-height: 756px; --section-scale: 1.12; } }
+        @media (max-width: 1376px) { .page { --slide-width: 1190px; --slide-height: 670px; --section-scale: .992; } }
+        @media (max-width: 1216px) { .page { --slide-width: 998px; --slide-height: 562px; --section-scale: .832; } }
+        @media (max-width: 1008px) { .page { --slide-width: 845px; --slide-height: 475px; --section-scale: .704; } }
         .slide { position:relative; min-height:675px; overflow:hidden; color:#fff; background:url("{% static 'decks/img/image(1).png' %}") center/cover no-repeat; box-shadow:0 2px 10px rgba(0,0,0,.24); padding:46px 46px 48px; }
         .content-card { width:min(610px, 52%); min-height:580px; border:1px solid rgba(255,255,255,.45); border-radius:22px; padding:28px; background:rgba(217,230,232,.34); box-shadow:inset 0 0 0 1px rgba(255,255,255,.12); }
         .content-card p { margin:0 0 24px; font-size:22px; line-height:1.18; font-weight:800; white-space:pre-line; }
@@ -55,7 +80,6 @@
                 <img class="message-icon" src="{% static 'decks/img/3d-chat-bubble-icon-blue-circle 1.png' %}" alt="">
             {% endif %}
         </section>
-        <a class="dashboard-link" href="{% url 'special_appreciation_dashboard' %}">Open dashboard</a>
     </main>
 </body>
 </html>

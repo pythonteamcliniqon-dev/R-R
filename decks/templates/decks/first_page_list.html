@@ -216,7 +216,7 @@
 </head>
 <body>
     <main class="page">
-        {% with first_pages|first as latest %}
+        {% with selected_page as latest %}
             <section class="hero{% if latest %} has-background{% endif %}"{% if latest %} style="--hero-background: url('{{ latest.image.url }}');"{% endif %}>
                 <div class="brand">
                     <img src="{% static 'decks/img/logo-1.png' %}" alt="Cliniqon">
@@ -234,8 +234,6 @@
             </section>
         {% endwith %}
 
-        <a class="dashboard-link" href="{% url 'dashboard' %}">Open dashboard</a>
-
         <section class="cards">
             {% for item in first_pages %}
                 <article class="card">
@@ -244,6 +242,12 @@
                         <h2>{{ item.title }}</h2>
                         <p>{{ item.description }}</p>
                         <time>{{ item.get_month_display }} {{ item.year }}</time>
+                        <a class="dashboard-link" href="{% url 'first_page_detail' item.id %}">Open slide</a>
+                        <form method="post" action="{% url 'delete_page_item' 'first' item.id %}" style="display:inline;" onsubmit="return confirm('Delete this saved slide?');">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{% url 'first_page_list' %}">
+                            <button class="dashboard-link" type="submit">Delete</button>
+                        </form>
                     </div>
                 </article>
             {% empty %}

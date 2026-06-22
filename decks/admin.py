@@ -6,6 +6,8 @@ from .models import (
     BulletCard,
     BulletItem,
     BulletPage,
+    CareerOpportunityJob,
+    CareerOpportunityPage,
     CaptionSlideImage,
     CaptionSlidePage,
     ClientDateItem,
@@ -190,3 +192,16 @@ class KudosBulletMomentPageAdmin(admin.ModelAdmin):
     list_display = ("title", "display_type", "name", "designation", "created_at")
     search_fields = ("title", "name", "designation")
     inlines = [KudosBulletMomentCardInline]
+
+
+class CareerOpportunityJobInline(admin.TabularInline):
+    model = CareerOpportunityJob
+    extra = 1
+    max_num = 10
+
+
+@admin.register(CareerOpportunityPage)
+class CareerOpportunityPageAdmin(admin.ModelAdmin):
+    list_display = ("title", "created_at")
+    search_fields = ("title", "content")
+    inlines = [CareerOpportunityJobInline]

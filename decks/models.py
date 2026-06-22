@@ -43,6 +43,45 @@ class FirstPage(models.Model):
         return self.title
 
 
+class HiddenSlide(models.Model):
+    slide_type = models.CharField(max_length=60)
+    object_id = models.PositiveIntegerField()
+    removed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-removed_at"]
+        unique_together = ("slide_type", "object_id")
+        verbose_name = "hidden slide"
+        verbose_name_plural = "hidden slides"
+
+    @property
+    def slide_key(self):
+        return f"{self.slide_type}:{self.object_id}"
+
+    def __str__(self):
+        return self.slide_key
+
+
+class SlideOrder(models.Model):
+    slide_type = models.CharField(max_length=60)
+    object_id = models.PositiveIntegerField()
+    position = models.PositiveIntegerField(default=1)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["position", "id"]
+        unique_together = ("slide_type", "object_id")
+        verbose_name = "slide order"
+        verbose_name_plural = "slide orders"
+
+    @property
+    def slide_key(self):
+        return f"{self.slide_type}:{self.object_id}"
+
+    def __str__(self):
+        return f"{self.slide_key} at {self.position}"
+
+
 class NextPage(models.Model):
     title = models.CharField(max_length=200, default="Key Metrics & Outcomes")
     description = models.CharField(max_length=200, default="Coding - Overall")
@@ -461,3 +500,38 @@ class KudosBulletMomentCard(models.Model):
 
     def __str__(self):
         return self.title or self.label or self.value or f"Card {self.order}"
+
+
+class CareerOpportunityPage(models.Model):
+    title = models.CharField(max_length=200, default="Career Opportunities")
+    content = models.TextField(
+        default="Expanding our talent horizon, building high-impact teams, and creating space for the next generation of leaders."
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "career opportunity page"
+        verbose_name_plural = "career opportunity pages"
+
+    def __str__(self):
+        return self.title
+
+
+class CareerOpportunityJob(models.Model):
+    page = models.ForeignKey(CareerOpportunityPage, related_name="jobs", on_delete=models.CASCADE)
+    title = models.CharField(max_length=200)
+    content = models.TextField(blank=True, default="")
+    order = models.PositiveSmallIntegerField(default=1)
+
+    class Meta:
+        ordering = ["order"]
+        verbose_name = "career opportunity job"
+        verbose_name_plural = "career opportunity jobs"
+
+    def clean(self):
+        if self.page_id and self.page.jobs.exclude(pk=self.pk).count() >= 10:
+            raise ValidationError("Only 10 jobs are allowed for one career opportunity page.")
+
+    def __str__(self):
+        return self.title

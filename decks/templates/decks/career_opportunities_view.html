@@ -1,0 +1,188 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Opportunities</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing:border-box; }
+        body { margin:0; min-height:100vh; background:#eef2f4; font-family:"Poppins", Arial, Helvetica, sans-serif; }
+        .page {
+            position: relative;
+            width: var(--slide-width, 1920px);
+            height: var(--slide-height, 1080px);
+            margin: 24px auto 72px;
+        }
+
+        .page > section {
+            width: 1200px;
+            min-height: 675px;
+            height: 675px;
+            transform: scale(var(--section-scale, 1.6));
+            transform-origin: top left;
+        }
+
+        .page > .dashboard-link {
+            position: absolute;
+            top: calc(100% + 18px);
+            left: 0;
+        }
+        @media (max-width: 1952px) { .page { --slide-width: 1728px; --slide-height: 972px; --section-scale: 1.44; } }
+        @media (max-width: 1760px) { .page { --slide-width: 1536px; --slide-height: 864px; --section-scale: 1.28; } }
+        @media (max-width: 1568px) { .page { --slide-width: 1344px; --slide-height: 756px; --section-scale: 1.12; } }
+        @media (max-width: 1376px) { .page { --slide-width: 1190px; --slide-height: 670px; --section-scale: .992; } }
+        @media (max-width: 1216px) { .page { --slide-width: 998px; --slide-height: 562px; --section-scale: .832; } }
+        @media (max-width: 1008px) { .page { --slide-width: 845px; --slide-height: 475px; --section-scale: .704; } }
+        .career-slide {
+            position:relative;
+            min-height:675px;
+            overflow:hidden;
+            color:#fff;
+            background:url("{% static 'decks/img/image(1).png' %}") center / cover no-repeat;
+            box-shadow:0 2px 10px rgba(0,0,0,.24);
+            padding:56px 56px;
+        }
+        .intro { width:42%; max-width:520px; }
+        .intro h1 { margin:0 0 22px; font-size:52px; line-height:1.05; font-weight:900; letter-spacing:0; text-shadow:0 3px 4px rgba(0,0,0,.18); }
+        .intro p { margin:0; font-size:17px; line-height:1.45; font-weight:700; text-shadow:0 3px 4px rgba(0,0,0,.18); }
+        .job-panel {
+            position:absolute;
+            top:46px;
+            right:44px;
+            width:44%;
+            min-height:584px;
+            border:1px solid rgba(255,255,255,.42);
+            border-radius:22px 22px 0 0;
+            padding:19px 42px;
+            background:rgba(212,229,232,.32);
+            box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
+            display:flex;
+            flex-wrap:wrap;
+            gap:24px;
+            align-content:flex-start;
+            align-items:flex-start;
+        }
+        .job-list {
+            display:grid;
+            /* grid-template-columns:repeat(2, minmax(0, 1fr)); */
+            flex:1 1 100%;
+            gap:16px;
+            width:100%;
+            max-height:500px;
+            overflow:hidden;
+        }
+        .job-card {
+            width:100%;
+            min-height:62px;
+            border:8px solid rgba(231,242,242,.92);
+            border-radius:14px;
+            padding:8px 11px;
+            color:#082a74;
+            background:
+            #ffffff;
+            box-shadow:0 8px 18px rgba(0, 0, 0, 0.288);
+        }
+        .job-card.is-wide { grid-column:1 / -1; }
+        .job-card strong { display:block; font-size:21px; line-height:1.12; font-weight:900; overflow-wrap:anywhere; }
+        .job-card p { margin:8px 0 0; color:#12336d; font-size:15px; line-height:1.35; font-weight:700; overflow-wrap:anywhere; }
+        .job-visual {
+            display:block;
+            width:277px;
+            height:242px;
+            object-fit:contain;
+            filter:drop-shadow(0 22px 20px rgba(0,0,0,.24));
+        }
+        .outside-visual {
+            display:none;
+            position:absolute;
+            left:20%;
+            bottom:45px;
+            margin:0;
+            transform:translateX(-50%);
+        }
+        .inside-visual { 
+            position:absolute;
+            left:50%;
+            bottom:24px;
+            margin:0;
+            transform:translateX(-50%);
+        }
+        .career-slide.has-outside-visual .outside-visual { display:block; }
+        .career-slide.has-outside-visual .inside-visual { display:none; }
+        .career-slide.has-outside-visual .job-list { max-height:100%; }
+        .career-slide.has-inside-visual .outside-visual { display:none; }
+        .career-slide.has-inside-visual .inside-visual { display:block; }
+        .career-slide.has-inside-visual .job-list { max-height:310px; }
+        .dashboard-link { display:inline-block; margin:18px 0 0; color:#0b3954; font-weight:800; }
+        @media (max-width:900px) {
+            .career-slide { padding:38px 24px; }
+            .intro { width:100%; max-width:none; }
+            .intro h1 { font-size:40px; }
+            .intro p { font-size:17px; }
+            .job-panel { position:relative; top:auto; right:auto; width:100%; min-height:360px; margin-top:32px; padding:26px; border-radius:18px; }
+            .job-list { grid-template-columns:1fr; flex-basis:100%; max-height:none; padding-bottom:0; }
+            .job-card { width:100%; }
+            .job-visual { margin:16px 0 22px; width:230px; height:202px; }
+            .outside-visual { position:static; margin:16px 0 22px; }
+            .inside-visual { position:static; margin:24px auto 0; transform:none; }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        {% if career_page %}
+            {% with jobs=career_jobs %}
+        <section class="career-slide {% if show_career_image_outside %}has-outside-visual{% else %}has-inside-visual{% endif %}">
+                <div class="intro">
+                    <h1>{{ career_page.title }}</h1>
+                    <p>{{ career_page.content }}</p>
+                    <img class="job-visual outside-visual" src="{% static 'decks/img/change-job-career-improvement-progression-concept-realistic-3d-object-cartoon-style 1.png' %}" alt="">
+                </div>
+                <div class="job-panel">
+                    <div class="job-list">
+                        {% for job in jobs|slice:":10" %}
+                            <article class="job-card {% if job.title|length > 28 or job.content|length > 55 %}is-wide{% endif %}">
+                                <strong>{{ job.title }}</strong>
+                                {% if job.content %}<p>{{ job.content }}</p>{% endif %}
+                            </article>
+                        {% endfor %}
+                    </div>
+                    <div class="inside-visual">
+                        <img class="job-visual" src="{% static 'decks/img/change-job-career-improvement-progression-concept-realistic-3d-object-cartoon-style 1.png' %}" alt="">
+                    </div>
+                </div>
+        </section>
+            {% endwith %}
+        {% endif %}
+    </main>
+    <script>
+        (function () {
+            function keepCareerImageClear() {
+                document.querySelectorAll(".career-slide").forEach(function (slide) {
+                    var panel = slide.querySelector(".job-panel");
+                    var list = slide.querySelector(".job-list");
+                    if (!panel || !list) return;
+
+                    var listOverflow = list.scrollHeight > list.clientHeight + 2;
+                    var panelOverflow = panel.scrollHeight > panel.clientHeight + 2;
+                    if (listOverflow || panelOverflow) {
+                        slide.classList.remove("has-inside-visual");
+                        slide.classList.add("has-outside-visual");
+                    }
+                });
+            }
+
+            if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", keepCareerImageClear);
+            } else {
+                keepCareerImageClear();
+            }
+            window.addEventListener("load", keepCareerImageClear);
+        })();
+    </script>
+</body>
+</html>
