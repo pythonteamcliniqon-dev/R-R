@@ -348,13 +348,15 @@ def capture_slide_screenshot_with_playwright(url, output_path):
         "chromium",
         "--viewport-size",
         "1200,675",
+        "--timeout",
+        "8000",
         "--wait-for-timeout",
-        "1000",
+        "500",
         url,
         str(output_path),
     ]
     try:
-        result = subprocess.run(command, capture_output=True, env=env, timeout=45)
+        result = subprocess.run(command, capture_output=True, env=env, timeout=10)
     except (OSError, subprocess.SubprocessError) as exc:
         logger.warning("Playwright screenshot failed to start for %s: %s", url, exc)
         return False
@@ -383,7 +385,7 @@ def capture_slide_screenshot_with_edge(url, output_path, user_data_dir):
         url,
     ]
     try:
-        result = subprocess.run(command, capture_output=True, timeout=30)
+        result = subprocess.run(command, capture_output=True, timeout=20)
     except (OSError, subprocess.SubprocessError) as exc:
         logger.warning("Browser screenshot failed to start for %s: %s", url, exc)
         return False
@@ -396,10 +398,13 @@ def capture_slide_screenshot_with_edge(url, output_path, user_data_dir):
 
 
 def capture_slide_screenshot(url, output_path, user_data_dir):
-    return (
-        capture_slide_screenshot_with_playwright(url, output_path)
-        or capture_slide_screenshot_with_edge(url, output_path, user_data_dir)
-    )
+    if capture_slide_screenshot_with_playwright(url, output_path):
+        return True
+
+    if os.name == "nt":
+        return capture_slide_screenshot_with_edge(url, output_path, user_data_dir)
+
+    return False
 
 
 def render_slide_screenshot_to_ppt(prs, screenshot_path):
@@ -430,42 +435,12 @@ def remove_temp_tree_later(path):
         try:
             shutil.rmtree(path)
             return
-        except PermissionError:
+        except (OSError, PermissionError):
             time.sleep(0.25)
     shutil.rmtree(path, ignore_errors=True)
 
 
-def export_slides_powerpoint(request):
-    prs = Presentation()
-    prs.slide_width = Inches(13.333)
-    prs.slide_height = Inches(7.5)
-
-    order_keys = request.POST.getlist("slide_key")
-    slides = get_visible_ordered_slides(order_keys=order_keys)
-    use_screenshots = request.get_host() != "testserver"
-
-    temp_dir = tempfile.mkdtemp()
-    browser_profile_dir = tempfile.mkdtemp()
-    try:
-        for index, slide_data in enumerate(slides, start=1):
-            slide_url = request.build_absolute_uri(reverse(slide_data["detail_url_name"], args=[slide_data["id"]]))
-            screenshot_path = Path(temp_dir) / f"slide-{index}.png"
-            try:
-                if use_screenshots and capture_slide_screenshot(slide_url, screenshot_path, browser_profile_dir):
-                    render_slide_screenshot_to_ppt(prs, str(screenshot_path))
-                else:
-                    render_slide_to_ppt(prs, slide_data)
-            except Exception:
-                logger.exception("PowerPoint export failed for slide %s; using fallback renderer.", slide_data)
-                try:
-                    render_slide_to_ppt(prs, slide_data)
-                except Exception:
-                    logger.exception("Fallback PowerPoint export failed for slide %s.", slide_data)
-                    render_export_error_slide(prs, slide_data.get("title", "Slide export failed"))
-    finally:
-        remove_temp_tree_later(temp_dir)
-        remove_temp_tree_later(browser_profile_dir)
-
+def powerpoint_response(prs, filename="ordered-slides.pptx"):
     output = BytesIO()
     prs.save(output)
     output.seek(0)
@@ -473,8 +448,62 @@ def export_slides_powerpoint(request):
         output.getvalue(),
         content_type="application/vnd.openxmlformats-officedocument.presentationml.presentation",
     )
-    response["Content-Disposition"] = 'attachment; filename="ordered-slides.pptx"'
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
     return response
+
+
+def export_slides_powerpoint(request):
+    try:
+        prs = Presentation()
+        prs.slide_width = Inches(13.333)
+        prs.slide_height = Inches(7.5)
+
+        order_keys = request.POST.getlist("slide_key")
+        slides = get_visible_ordered_slides(order_keys=order_keys)
+        use_screenshots = request.get_host() != "testserver"
+
+        temp_dir = tempfile.mkdtemp()
+        browser_profile_dir = tempfile.mkdtemp()
+        screenshot_failed = False
+        for index, slide_data in enumerate(slides, start=1):
+            slide_url = request.build_absolute_uri(reverse(slide_data["detail_url_name"], args=[slide_data["id"]]))
+            screenshot_path = Path(temp_dir) / f"slide-{index}.png"
+            try:
+                if use_screenshots and not screenshot_failed and capture_slide_screenshot(slide_url, screenshot_path, browser_profile_dir):
+                    render_slide_screenshot_to_ppt(prs, str(screenshot_path))
+                else:
+                    screenshot_failed = use_screenshots
+                    render_slide_to_ppt(prs, slide_data)
+            except Exception:
+                logger.exception("PowerPoint export failed for slide %s; using fallback renderer.", slide_data)
+                screenshot_failed = use_screenshots
+                try:
+                    render_slide_to_ppt(prs, slide_data)
+                except Exception:
+                    logger.exception("Fallback PowerPoint export failed for slide %s.", slide_data)
+                    render_export_error_slide(prs, slide_data.get("title", "Slide export failed"))
+
+        remove_temp_tree_later(temp_dir)
+        remove_temp_tree_later(browser_profile_dir)
+        return powerpoint_response(prs)
+    except Exception as exc:
+        logger.exception("PowerPoint export failed before response could be created.")
+        prs = Presentation()
+        prs.slide_width = Inches(13.333)
+        prs.slide_height = Inches(7.5)
+        render_export_error_slide(prs, "PowerPoint export failed")
+        add_textbox(
+            prs.slides[-1],
+            Inches(0.75),
+            Inches(3.85),
+            Inches(11.8),
+            Inches(0.45),
+            str(exc),
+            10,
+            False,
+            "B42318",
+        )
+        return powerpoint_response(prs, filename="export-error.pptx")
 
 
 @require_POST
