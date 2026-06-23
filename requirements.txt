@@ -2,3 +2,4 @@ Django==6.0.6
 gunicorn==26.0.0
 pillow==12.2.0
 python-pptx==1.0.2
+asgiref==3.11.1
