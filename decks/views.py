@@ -2,6 +2,7 @@ from io import BytesIO
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tempfile
 import time
 
@@ -331,21 +332,17 @@ def edge_executable():
 
 
 def capture_slide_screenshot_with_playwright(url, output_path):
-    playwright = shutil.which("playwright")
-    if not playwright:
-        return False
-
     command = [
-        playwright,
+        sys.executable,
+        "-m",
+        "playwright",
         "screenshot",
         "--browser",
         "chromium",
-        "--channel",
-        "msedge",
         "--viewport-size",
         "1200,675",
         "--wait-for-timeout",
-        "500",
+        "1000",
         url,
         str(output_path),
     ]
