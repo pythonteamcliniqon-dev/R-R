@@ -27,7 +27,6 @@ class FirstPage(models.Model):
         (12, "December"),
     ]
 
-    image = models.ImageField(upload_to="first_pages/")
     title = models.CharField(max_length=200)
     description = models.TextField()
     year = models.PositiveIntegerField(default=current_year)

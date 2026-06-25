@@ -23,7 +23,7 @@ from .models import (
 class FirstPageForm(forms.ModelForm):
     class Meta:
         model = FirstPage
-        fields = ["image", "title", "description", "year", "month"]
+        fields = ["title", "description", "year", "month"]
         widgets = {
             "description": forms.Textarea(attrs={"rows": 4}),
             "year": forms.NumberInput(attrs={"min": 1900, "max": 2100}),

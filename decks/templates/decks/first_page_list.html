@@ -42,11 +42,7 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            background-image:
-                radial-gradient(circle at 52% 48%, rgba(170, 218, 203, 0.27) 0 28%, rgba(170, 218, 203, 0.11) 29% 42%, transparent 43%),
-                radial-gradient(circle at 56% 0%, rgba(181, 218, 204, 0.58), transparent 40%),
-                linear-gradient(135deg, #173a58 0%, #7ba49f 42%, #102e4e 72%, #07192f 100%);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.24);
+           background: url("{% static 'decks/img/image(1).png' %}") center / cover no-repeat;
         }
 
         .hero.has-background {
@@ -217,7 +213,7 @@
 <body>
     <main class="page">
         {% with selected_page as latest %}
-            <section class="hero{% if latest %} has-background{% endif %}"{% if latest %} style="--hero-background: url('{{ latest.image.url }}');"{% endif %}>
+            <section class="hero">
                 <div class="brand">
                     <img src="{% static 'decks/img/logo-1.png' %}" alt="Cliniqon">
                 </div>
