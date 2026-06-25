@@ -353,7 +353,15 @@ def capture_slide_screenshot_with_playwright(url, output_path):
                 ]
             )
             page = browser.new_page(viewport={"width": 1200, "height": 675}, device_scale_factor=1)
-            page.goto(url, wait_until="networkidle", timeout=15000)
+            page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            try:
+                page.wait_for_load_state("networkidle", timeout=5000)
+            except Exception:
+                logger.info("Continuing screenshot before network idle for %s.", url)
+            page.wait_for_function(
+                "() => Array.from(document.images).every((image) => image.complete)",
+                timeout=10000,
+            )
             page.screenshot(path=str(output_path), full_page=False)
             browser.close()
     except Exception as exc:
@@ -405,6 +413,14 @@ def capture_slide_screenshot(url, output_path, user_data_dir):
 def render_slide_screenshot_to_ppt(prs, screenshot_path):
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     slide.shapes.add_picture(screenshot_path, 0, 0, width=prs.slide_width, height=prs.slide_height)
+
+
+def build_slide_capture_url(request, detail_url_name, object_id):
+    path = reverse(detail_url_name, args=[object_id])
+    port = os.environ.get("PORT")
+    if port:
+        return f"http://127.0.0.1:{port}{path}"
+    return request.build_absolute_uri(path)
 
 
 def render_export_error_slide(prs, title):
@@ -462,7 +478,7 @@ def export_slides_powerpoint(request):
         temp_dir = tempfile.mkdtemp()
         browser_profile_dir = tempfile.mkdtemp()
         for index, slide_data in enumerate(slides, start=1):
-            slide_url = request.build_absolute_uri(reverse(slide_data["detail_url_name"], args=[slide_data["id"]]))
+            slide_url = build_slide_capture_url(request, slide_data["detail_url_name"], slide_data["id"])
             screenshot_path = Path(temp_dir) / f"slide-{index}.png"
             try:
                 if use_screenshots:
