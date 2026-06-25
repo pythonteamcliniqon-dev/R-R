@@ -341,7 +341,7 @@ def capture_slide_screenshot_with_playwright(url, output_path):
         from playwright.sync_api import sync_playwright
     except ImportError as exc:
         logger.warning("Playwright is not installed: %s", exc)
-        return False
+        return False, f"Playwright is not installed: {exc}"
 
     try:
         with sync_playwright() as playwright:
@@ -353,7 +353,9 @@ def capture_slide_screenshot_with_playwright(url, output_path):
                 ]
             )
             page = browser.new_page(viewport={"width": 1200, "height": 675}, device_scale_factor=1)
-            page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            response = page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            if response and not response.ok:
+                raise RuntimeError(f"Slide URL returned HTTP {response.status}: {url}")
             try:
                 page.wait_for_load_state("networkidle", timeout=5000)
             except Exception:
@@ -366,15 +368,17 @@ def capture_slide_screenshot_with_playwright(url, output_path):
             browser.close()
     except Exception as exc:
         logger.warning("Playwright screenshot failed for %s: %s", url, exc)
-        return False
+        return False, f"Playwright screenshot failed: {exc}"
 
-    return output_path.exists() and output_path.stat().st_size > 0
+    if output_path.exists() and output_path.stat().st_size > 0:
+        return True, ""
+    return False, f"Playwright did not create a screenshot file: {output_path}"
 
 
 def capture_slide_screenshot_with_edge(url, output_path, user_data_dir):
     browser = edge_executable()
     if not browser:
-        return False
+        return False, "No Edge or Chrome executable was found."
 
     command = [
         browser,
@@ -391,23 +395,30 @@ def capture_slide_screenshot_with_edge(url, output_path, user_data_dir):
         result = subprocess.run(command, capture_output=True, timeout=20)
     except (OSError, subprocess.SubprocessError) as exc:
         logger.warning("Browser screenshot failed to start for %s: %s", url, exc)
-        return False
+        return False, f"Browser screenshot failed to start: {exc}"
 
     if result.returncode != 0:
-        logger.warning("Browser screenshot failed for %s: %s", url, result.stderr.decode(errors="ignore"))
-        return False
+        stderr = result.stderr.decode(errors="ignore")
+        logger.warning("Browser screenshot failed for %s: %s", url, stderr)
+        return False, f"Browser screenshot failed: {stderr}"
 
-    return Path(output_path).exists() and Path(output_path).stat().st_size > 0
+    if Path(output_path).exists() and Path(output_path).stat().st_size > 0:
+        return True, ""
+    return False, f"Browser did not create a screenshot file: {output_path}"
 
 
 def capture_slide_screenshot(url, output_path, user_data_dir):
-    if capture_slide_screenshot_with_playwright(url, output_path):
-        return True
+    success, error = capture_slide_screenshot_with_playwright(url, output_path)
+    if success:
+        return True, ""
 
     if os.name == "nt":
-        return capture_slide_screenshot_with_edge(url, output_path, user_data_dir)
+        edge_success, edge_error = capture_slide_screenshot_with_edge(url, output_path, user_data_dir)
+        if edge_success:
+            return True, ""
+        return False, f"{error}; {edge_error}"
 
-    return False
+    return False, error
 
 
 def render_slide_screenshot_to_ppt(prs, screenshot_path):
@@ -482,9 +493,16 @@ def export_slides_powerpoint(request):
             screenshot_path = Path(temp_dir) / f"slide-{index}.png"
             try:
                 if use_screenshots:
-                    if not capture_slide_screenshot(slide_url, screenshot_path, browser_profile_dir):
-                        raise RuntimeError(f"Could not capture designed slide: {slide_url}")
-                    render_slide_screenshot_to_ppt(prs, str(screenshot_path))
+                    captured, capture_error = capture_slide_screenshot(slide_url, screenshot_path, browser_profile_dir)
+                    if captured:
+                        render_slide_screenshot_to_ppt(prs, str(screenshot_path))
+                    else:
+                        logger.error(
+                            "Designed PowerPoint export failed for %s. Falling back to generated slide. Reason: %s",
+                            slide_url,
+                            capture_error,
+                        )
+                        render_slide_to_ppt(prs, slide_data)
                 else:
                     render_slide_to_ppt(prs, slide_data)
             except Exception:
