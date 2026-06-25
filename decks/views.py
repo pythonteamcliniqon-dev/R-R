@@ -4,7 +4,6 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
-import sys
 import tempfile
 import time
 
@@ -337,35 +336,31 @@ def edge_executable():
 
 
 def capture_slide_screenshot_with_playwright(url, output_path):
-    env = os.environ.copy()
-    env.setdefault("PLAYWRIGHT_BROWSERS_PATH", "0")
-    command = [
-        sys.executable,
-        "-m",
-        "playwright",
-        "screenshot",
-        "--browser",
-        "chromium",
-        "--viewport-size",
-        "1200,675",
-        "--timeout",
-        "8000",
-        "--wait-for-timeout",
-        "500",
-        url,
-        str(output_path),
-    ]
+    os.environ.setdefault("PLAYWRIGHT_BROWSERS_PATH", "0")
     try:
-        result = subprocess.run(command, capture_output=True, env=env, timeout=10)
-    except (OSError, subprocess.SubprocessError) as exc:
-        logger.warning("Playwright screenshot failed to start for %s: %s", url, exc)
+        from playwright.sync_api import sync_playwright
+    except ImportError as exc:
+        logger.warning("Playwright is not installed: %s", exc)
         return False
 
-    if result.returncode != 0:
-        logger.warning("Playwright screenshot failed for %s: %s", url, result.stderr.decode(errors="ignore"))
+    try:
+        with sync_playwright() as playwright:
+            browser = playwright.chromium.launch(
+                args=[
+                    "--disable-dev-shm-usage",
+                    "--disable-gpu",
+                    "--no-sandbox",
+                ]
+            )
+            page = browser.new_page(viewport={"width": 1200, "height": 675}, device_scale_factor=1)
+            page.goto(url, wait_until="networkidle", timeout=15000)
+            page.screenshot(path=str(output_path), full_page=False)
+            browser.close()
+    except Exception as exc:
+        logger.warning("Playwright screenshot failed for %s: %s", url, exc)
         return False
 
-    return Path(output_path).exists() and Path(output_path).stat().st_size > 0
+    return output_path.exists() and output_path.stat().st_size > 0
 
 
 def capture_slide_screenshot_with_edge(url, output_path, user_data_dir):
@@ -453,6 +448,8 @@ def powerpoint_response(prs, filename="ordered-slides.pptx"):
 
 
 def export_slides_powerpoint(request):
+    temp_dir = None
+    browser_profile_dir = None
     try:
         prs = Presentation()
         prs.slide_width = Inches(13.333)
@@ -464,27 +461,20 @@ def export_slides_powerpoint(request):
 
         temp_dir = tempfile.mkdtemp()
         browser_profile_dir = tempfile.mkdtemp()
-        screenshot_failed = False
         for index, slide_data in enumerate(slides, start=1):
             slide_url = request.build_absolute_uri(reverse(slide_data["detail_url_name"], args=[slide_data["id"]]))
             screenshot_path = Path(temp_dir) / f"slide-{index}.png"
             try:
-                if use_screenshots and not screenshot_failed and capture_slide_screenshot(slide_url, screenshot_path, browser_profile_dir):
+                if use_screenshots:
+                    if not capture_slide_screenshot(slide_url, screenshot_path, browser_profile_dir):
+                        raise RuntimeError(f"Could not capture designed slide: {slide_url}")
                     render_slide_screenshot_to_ppt(prs, str(screenshot_path))
                 else:
-                    screenshot_failed = use_screenshots
                     render_slide_to_ppt(prs, slide_data)
             except Exception:
-                logger.exception("PowerPoint export failed for slide %s; using fallback renderer.", slide_data)
-                screenshot_failed = use_screenshots
-                try:
-                    render_slide_to_ppt(prs, slide_data)
-                except Exception:
-                    logger.exception("Fallback PowerPoint export failed for slide %s.", slide_data)
-                    render_export_error_slide(prs, slide_data.get("title", "Slide export failed"))
+                logger.exception("Designed PowerPoint export failed for slide %s.", slide_data)
+                raise
 
-        remove_temp_tree_later(temp_dir)
-        remove_temp_tree_later(browser_profile_dir)
         return powerpoint_response(prs)
     except Exception as exc:
         logger.exception("PowerPoint export failed before response could be created.")
@@ -504,6 +494,11 @@ def export_slides_powerpoint(request):
             "B42318",
         )
         return powerpoint_response(prs, filename="export-error.pptx")
+    finally:
+        if temp_dir:
+            remove_temp_tree_later(temp_dir)
+        if browser_profile_dir:
+            remove_temp_tree_later(browser_profile_dir)
 
 
 @require_POST
