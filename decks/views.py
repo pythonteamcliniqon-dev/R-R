@@ -353,7 +353,7 @@ def capture_slide_screenshot_with_playwright(url, output_path):
                 ]
             )
             page = browser.new_page(viewport={"width": 1200, "height": 675}, device_scale_factor=1)
-            response = page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            response = page.goto(url, wait_until="domcontentloaded", timeout=10000)
             if response and not response.ok:
                 raise RuntimeError(f"Slide URL returned HTTP {response.status}: {url}")
             try:
@@ -362,7 +362,7 @@ def capture_slide_screenshot_with_playwright(url, output_path):
                 logger.info("Continuing screenshot before network idle for %s.", url)
             page.wait_for_function(
                 "() => Array.from(document.images).every((image) => image.complete)",
-                timeout=10000,
+                timeout=5000,
             )
             page.screenshot(path=str(output_path), full_page=False)
             browser.close()
@@ -392,7 +392,7 @@ def capture_slide_screenshot_with_edge(url, output_path, user_data_dir):
         url,
     ]
     try:
-        result = subprocess.run(command, capture_output=True, timeout=20)
+        result = subprocess.run(command, capture_output=True, timeout=10)
     except (OSError, subprocess.SubprocessError) as exc:
         logger.warning("Browser screenshot failed to start for %s: %s", url, exc)
         return False, f"Browser screenshot failed to start: {exc}"
@@ -488,17 +488,19 @@ def export_slides_powerpoint(request):
 
         temp_dir = tempfile.mkdtemp()
         browser_profile_dir = tempfile.mkdtemp()
+        screenshots_available = use_screenshots
         for index, slide_data in enumerate(slides, start=1):
             slide_url = build_slide_capture_url(request, slide_data["detail_url_name"], slide_data["id"])
             screenshot_path = Path(temp_dir) / f"slide-{index}.png"
             try:
-                if use_screenshots:
+                if screenshots_available:
                     captured, capture_error = capture_slide_screenshot(slide_url, screenshot_path, browser_profile_dir)
                     if captured:
                         render_slide_screenshot_to_ppt(prs, str(screenshot_path))
                     else:
+                        screenshots_available = False
                         logger.error(
-                            "Designed PowerPoint export failed for %s. Falling back to generated slide. Reason: %s",
+                            "Designed PowerPoint export failed for %s. Falling back to generated slides for this export. Reason: %s",
                             slide_url,
                             capture_error,
                         )
